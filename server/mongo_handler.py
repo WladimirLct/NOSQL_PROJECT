@@ -105,8 +105,6 @@ def extremums_temperature_by_city(city_name, target_date_str):
     return f"No temperature data found for {city_name} on {target_date_str}."
 
 
-
-
 def wind_strength(city_name, target_date_str):
     collection = db["wind"]
 
@@ -167,22 +165,61 @@ def wind_strength(city_name, target_date_str):
     return f"No wind data found for {city_name} on {target_date_str}."
 
 
-def closest_temperature(city_name):
-    collection = db["temperatures"]
+def get_latest_weather_data(city_name, data_name, document_name):
+    collection = db[document_name]
 
-    # Filtre pour la ville spécifiée
+    # Filter for the specified city
     query = {'city_id': city_name}
 
-    # Trier par date en ordre décroissant pour obtenir la dernière température
+    # Sort by date in descending order to get the latest data
     result = collection.find_one(query, sort=[('last_updated', pymongo.DESCENDING)])
-    # print(result)
 
-    temperature = result.get('temp_c')
-    last_updated = result.get('last_updated').strftime('%Y-%m-%d %H:%M:%S')
-    return f"Last recorded temperature in {city_name} on {last_updated} was {temperature} degrees Celsius."
+    # Check if the result is not None
+    if result:
+        value = result.get(data_name)
+        last_updated = result.get('last_updated').strftime('%Y-%m-%d %H:%M:%S')
+        return city_name, last_updated, value
+    else:
+        return city_name, None, None
+    
+    
+    
+def get_daily_weather_data(city_name, data_name, document_name, input_date):
+    collection = db[document_name]
 
+    # Convert the input date string to a datetime object
+    input_datetime = datetime.strptime(input_date, '%Y-%m-%d')
 
-print(closest_temperature("ParisFR"))
+    # Define the start and end of the specified day
+    start_of_day = input_datetime.replace(hour=0, minute=0, second=0, microsecond=0)
+    end_of_day = input_datetime.replace(hour=23, minute=59, second=59, microsecond=999999)
+
+    # Filter for the specified city and within the specified day
+    query = {
+        'city_id': city_name,
+        'last_updated': {'$gte': start_of_day, '$lte': end_of_day}
+    }
+
+    # Sort by date in ascending order to get data for the entire day
+    results = collection.find(query, sort=[('last_updated', pymongo.ASCENDING)])
+
+    data_list = []
+
+    for result in results:
+        data = [
+            result['city_id'],
+            result['last_updated'].strftime('%Y-%m-%d %H:%M:%S'),
+            result[data_name]
+        ]
+        data_list.append(data)
+
+    return data_list
+        
+    
+
+print(get_daily_weather_data("ParisFR","temp_c",'temperatures',"2024-02-16"))
+
+# print(get_latest_weather_data("ParisFR","cloud",'basics'))
 
 # print(wind_strength("TokyoJP","2024-02-14"))
 
