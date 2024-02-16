@@ -59,7 +59,7 @@ def bad_air_quality(date):
 
 
 
-def highest_temperature_by_city(city_name, target_date_str):
+def extremums_temperature_by_city(city_name, target_date_str):
     collection = db["temperatures"]
 
     # Convertir la date en objet datetime sans tenir compte de l'heure
@@ -81,14 +81,18 @@ def highest_temperature_by_city(city_name, target_date_str):
             "$sort": {"temp_c": -1}  # Tri par ordre décroissant de la température
         },
         {
-            "$limit": 1  # Limiter le résultat à une seule entrée (la plus haute température)
+            "$group": {
+                "_id": "$city_id",
+                "max_temp": {"$first": "$temp_c"},
+                "min_temp": {"$last": "$temp_c"}
+            }
         },
         {
             "$project": {
                 "_id": 0,
-                "city_id": 1,
-                "last_updated": 1,
-                "temp_c": 1,
+                "city_id": "$_id",
+                "max_temp": 1,
+                "min_temp": 1
             }
         }
     ]
@@ -96,14 +100,14 @@ def highest_temperature_by_city(city_name, target_date_str):
     result = collection.aggregate(pipeline)
 
     for data in result:
-        return f"Highest temperature in {data['city_id']} on {data['last_updated'].strftime('%Y-%m-%d %H:%M:%S')} was {data['temp_c']} degrees Celsius."
+        return f"For {data['city_id']} on {target_date_str}, the highest temperature was {data['max_temp']} degrees Celsius, and the lowest temperature was {data['min_temp']} degrees Celsius."
 
     return f"No temperature data found for {city_name} on {target_date_str}."
 
 
 
 
-def highest_wind_strength(city_name, target_date_str):
+def wind_strength(city_name, target_date_str):
     collection = db["wind"]
 
     # Convertir la date en objet datetime sans tenir compte de l'heure
@@ -158,14 +162,31 @@ def highest_wind_strength(city_name, target_date_str):
         wind_speed_kmh = data['wind_kph']
         wind_scale = next(scale for (lower, upper), scale in beaufort_scale.items() if lower <= wind_speed_kmh <= upper)
 
-        return f"Wind scale in {city_name} on {data['last_updated'].strftime('%Y-%m-%d %H:%M:%S')} is {wind_scale} with a speed of {wind_speed_kmh:.2f} km/h."
+        return f"City : {city_name}, date : {data['last_updated'].strftime('%Y-%m-%d %H:%M:%S')}, speed : {wind_speed_kmh:.2f} km/h,  Beaufort scale : {wind_scale}"
 
     return f"No wind data found for {city_name} on {target_date_str}."
 
-print(highest_wind_strength("TokyoJP","2024-02-14"))
-    
 
-# print(highest_temperature_by_city("ParisFR","2024-02-12"))
+def closest_temperature(city_name):
+    collection = db["temperatures"]
+
+    # Filtre pour la ville spécifiée
+    query = {'city_id': city_name}
+
+    # Trier par date en ordre décroissant pour obtenir la dernière température
+    result = collection.find_one(query, sort=[('last_updated', pymongo.DESCENDING)])
+    # print(result)
+
+    temperature = result.get('temp_c')
+    last_updated = result.get('last_updated').strftime('%Y-%m-%d %H:%M:%S')
+    return f"Last recorded temperature in {city_name} on {last_updated} was {temperature} degrees Celsius."
+
+
+print(closest_temperature("ParisFR"))
+
+# print(wind_strength("TokyoJP","2024-02-14"))
+
+# print(extremums_temperature_by_city("MoscowRU","2024-02-16"))
 
 # print(bad_air_quality("2024-02-08"))
 
