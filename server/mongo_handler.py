@@ -1,6 +1,7 @@
 import pymongo
 import dotenv
-from datetime import datetime
+from datetime import datetime,timedelta
+
 
 def connect_to_mongo():
     dotenv.load_dotenv()
@@ -59,8 +60,12 @@ def bad_air_quality(date):
 
 
 
-def extremums_temperature_by_city(city_name, target_date_str):
-    collection = db["temperatures"]
+def extremums_temperature_by_city(city_name, target_date_str, document_name="temperatures"):
+    collection = db[document_name]
+    if document_name == "forecast_temperatures":
+        date = "time"
+    else:
+        date = "last_updated"
 
     # Convertir la date en objet datetime sans tenir compte de l'heure
     target_date_obj = datetime.strptime(target_date_str, '%Y-%m-%d').date()
@@ -74,7 +79,7 @@ def extremums_temperature_by_city(city_name, target_date_str):
         {
             "$match": {
                 'city_id': city_name,
-                'last_updated': {'$gte': start_datetime, '$lte': end_datetime},
+                date: {'$gte': start_datetime, '$lte': end_datetime},
             }
         },
         {
@@ -100,7 +105,7 @@ def extremums_temperature_by_city(city_name, target_date_str):
     result = collection.aggregate(pipeline)
 
     for data in result:
-        return f"For {data['city_id']} on {target_date_str}, the highest temperature was {data['max_temp']} degrees Celsius, and the lowest temperature was {data['min_temp']} degrees Celsius."
+        return data["city_id"], data["max_temp"], data["min_temp"]
 
     return f"No temperature data found for {city_name} on {target_date_str}."
 
@@ -214,16 +219,32 @@ def get_daily_weather_data(city_name, data_name, document_name, input_date):
         data_list.append(data)
 
     return data_list
-        
+
+def temp_extremum_7_next_day(city_name, first_day):
+    date = first_day
+    result = []
+    for i in range(7):
+        result.append(extremums_temperature_by_city(city_name, date,"forecast_temperatures"))
+         # add 1 to the last 2 digit of first_day
+        date = datetime.strptime(date, '%Y-%m-%d') + timedelta(days=1)
+        date = date.strftime('%Y-%m-%d')
+    return result
+    
+    
+    
     
 
-print(get_daily_weather_data("ParisFR","temp_c",'temperatures',"2024-02-16"))
+
+print(temp_extremum_7_next_day("ParisFR",datetime.now().strftime('%Y-%m-%d')))
+    
+
+# print(get_daily_weather_data("ParisFR","temp_c",'temperatures',"2024-02-16"))
 
 # print(get_latest_weather_data("ParisFR","cloud",'basics'))
 
 # print(wind_strength("TokyoJP","2024-02-14"))
 
-# print(extremums_temperature_by_city("MoscowRU","2024-02-16"))
+# print(extremums_temperature_by_city("ParisFR","2024-02-17"))
 
 # print(bad_air_quality("2024-02-08"))
 
