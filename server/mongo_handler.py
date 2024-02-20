@@ -168,3 +168,38 @@ def format_latest_data(result, city_name, data_name):
 
 def format_daily_data(results, data_name):
     return [[r['city_id'], r['last_updated'].strftime('%Y-%m-%d %H:%M:%S'), r[data_name]] for r in results]
+
+
+def create_weather_pattern_alerts_pipeline(city_id, n, temp_change_threshold):
+    current_datetime = datetime.utcnow()
+    print(f"Current datetime: {current_datetime}")
+    return [
+        {'$match': {'city_id': city_id, 'time': {'$gte': current_datetime}}},
+        {'$limit': n},
+        {'$group': {
+            '_id': '$city_id',
+            'latest_temp': {'$first': '$temp_c'},
+            'earliest_temp': {'$last': '$temp_c'},
+            'latest_date': {'$first': '$time'},
+            'earliest_date': {'$last': '$time'}
+        }},
+        {'$project': {
+            'temp_change': {'$abs': {'$subtract': ['$latest_temp', '$earliest_temp']}},
+            'latest_date': 1,
+            'earliest_date': 1,
+            'latest_temp': 1,
+            'earliest_temp': 1
+        }},
+        {'$match': {'temp_change': {'$gte': temp_change_threshold}}}
+    ]
+
+def weather_pattern_alerts(db, city_id, n=24, temp_change_threshold=10):
+    pipeline = create_weather_pattern_alerts_pipeline(city_id, n, temp_change_threshold)
+    result = aggregate_data(db['forecast_temperatures'], pipeline)
+    if result:
+        print(f"Temperature change in {city_id} exceeds {temp_change_threshold}°C for the next {n} hours.")
+        print(f"Earliest temperature: {result[0]['latest_temp']}°C on {result[0]['latest_date']}")
+        print(f"Latest temperature: {result[0]['earliest_temp']}°C on {result[0]['earliest_date']}")
+    else:
+        print(f"No significant temperature change in {city_id} for the next {n} hours.")
+    return result
