@@ -7,12 +7,17 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="container mx-auto">
-    <h1>Weather App</h1>
+<body class="container mx-auto flex justify-center items-center h-screen bg-gray-100">
 
-    <div>
-        <label for="city">City:</label>
-        <select id="city" name="city">
+    <div class="flex space-x-4">
+
+        <!-- First Gray Frame -->
+        <div class="w-1/2 bg-gray-200 p-4">
+            <h1 class="text-2xl font-bold mb-4">Weather App</h1>
+
+            <div class="mb-4">
+                <label for="city">City:</label>
+                <select id="city" name="city">
             <option value="ParisFR" selected>Paris - France</option>
             {% for city in cities %}
                 {% if city["_id"] != "ParisFR" %}
@@ -22,31 +27,55 @@
         </select>
     </div>
 
-    <div>
-        <canvas id="dailyTempChart"></canvas>
+    <div class="flex justify-center">
+        <canvas id="dailyTempChart" class="bg-white p-4"></canvas>
     </div>
+</div>
+
+    
+    <div class="w-1/2 bg-gray-200 p-4">
+        <h1 class="text-2xl font-bold mb-4">Weather App</h1>
+
+        <div class="mb-4">
+        </div>
+
+        <div class="flex justify-center">
+            <canvas id="caca" class="bg-white p-4"></canvas>
+        </div>
+</div>
 
     <script>
         const daily_temp_chart = document.getElementById('dailyTempChart').getContext('2d');
-        const daily_chart = document.getElementById('dailyChart').getContext('2d');
+        const daily_temp = document.getElementById('caca').getContext('2d');
     </script>
 
     <script type="module">
         import { createChart } from "{{ url_for('static', filename='js/chartGen.js') }}";
+        import { createHistogram } from "{{ url_for('static', filename='js/chartGen.js') }}";
         import { fetchDailyHistory } from "{{ url_for('static', filename='js/fetchData.js') }}";
 
         showChart("ParisFR")
+        showHist("ParisFR")
 
         // Event listener for when the selected city changes
         document.getElementById('city').addEventListener('change', function() {
             showChart(this.value, daily_temp_chart)
+            showHist(this.value, daily_temp)
         });
+
 
         async function showChart(city, chart){
             const date = (new Date()).toISOString().split('T')[0];; //To this format : 2024-02-16
             let [ labels, results ] = await fetchDailyHistory(city, 'temp_c', 'temperatures', date);
             createChart(daily_temp_chart, 'line', labels, 'Temperature (°C)', results, 'rgb(75, 192, 192)', 0.1, false);
         }
+
+        async function showHist(city, chart){
+            const date = (new Date()).toISOString().split('T')[0];; //To this format : 2024-02-16
+            let [ labels, results ] = await fetchDailyHistory(city, 'uv', 'basics', date);
+            createHistogram(daily_temp, labels, results);
+        }
+        
     </script>
 </body>
 </html>
