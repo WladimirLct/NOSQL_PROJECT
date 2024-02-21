@@ -20,6 +20,14 @@ def predict_temp_extremes_next_7_days():
     result = mongo_handler.predict_temp_extremes_next_7_days(db, city_name, start_date)
     return flask.jsonify(result)
 
+import json
+
+@app.route('/get_seven_day_forecast', methods=['GET'])
+def get_seven_day_forecast():
+    city_name = flask.request.args.get('city_name')
+    result = mongo_handler.get_seven_day_forecast(db, city_name)
+    return flask.jsonify(result)
+
 
 @app.route('/get_daily_weather_data', methods=['GET'])
 def get_daily_weather_data():

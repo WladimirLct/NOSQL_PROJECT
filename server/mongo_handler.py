@@ -95,6 +95,13 @@ def get_daily_weather_data(db, city_name, data_name, document_name, date):
     results = collection.find(query, sort=[('last_updated', pymongo.ASCENDING)])
     return format_daily_data(results, data_name)
 
+def get_seven_day_forecast(db, city_name):
+    collection = db["forecast_day"];
+    query = {'city_id': city_name}
+    keep = {'_id': 0, 'city_id': 1, 'info': 1, 'condition': 1, 'date': 1}
+    results = collection.find(query, keep, sort=[('date', pymongo.ASCENDING)])
+    return [r for r in results]
+
 
 # Predicts temperature extremes for the next 7 days
 def predict_temp_extremes_next_7_days(db, city_name, start_date):
@@ -128,7 +135,6 @@ def format_temperature_data(data, city_name, date):
         return data[0]["city_id"], data[0]["max_temp"], data[0]["min_temp"]
     else:
         return f"No temperature data found for {city_name} on {date}."
-
 
 def format_wind_data(data, city_name):
     beaufort_scale = define_beafort_scale()
@@ -230,5 +236,3 @@ def get_high_wind_speed_cities(db, date, wind_speed_threshold):
         })
 
     return data
-
-
