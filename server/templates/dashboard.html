@@ -39,17 +39,18 @@
                     <span class="block text-black-600 text-sm font-bold mb-1" id="month">Today, Aug 30</span>
                 </div>
             </div>
-            <div class="flex flex-row mb-4">
+            <div class="flex flex-row mb-1">
                 <span class="block text-black-600 text-sm font-bold mb-1 mr-5" id="day">Tuesday,</span>
                 <span class="block text-black-600 text-sm font-bold mb-1" id="time">11:47</span>
             </div>
-            <div>
-                <span class="block text-xs font-bold mb-2">Sunny</span>
-
+            <div class="flex flex-col items-center mb-2">
+                <img  id= "conditionImg" src="//cdn.weatherapi.com/weather/64x64/night/143.png" alt="weather">
+                <span class="block text-xs font-bold mb-2 " id = "condition">Sunny</span>
             </div>
             <div class="flex flex-col items-center mb-3">
                 <div class="flex flex-row mb-4">
-                    <span class="block text-black text-8xl" id = "temp_c">+26°</span>
+                    <span class="block text-black text-8xl" id = "temp_c">+26</span>
+                    <p class="block text-black text-5xl"><sup>°C</sup></p>
                 </div>
                 <div class="flex flex-row mb-4">
                     <span class="block text-black-600 text-xs mb-1 mr-1">Feels like</span>
@@ -89,14 +90,12 @@
     <script type="module">
         import { fetchLatestWeather } from "{{ url_for('static', filename='js/fetchData.js') }}";
         import { replaceDashBoardValues } from "{{ url_for('static', filename='js/fillDashBoardValues.js') }}";
-        console.log(fetchLatestWeather);
 
-        // Event listener for when the selected city changes
         document.getElementById('city').addEventListener('change', function() {
             getDashBoardData(this.value)
         });
 
-        async function getDashBoardData(city, chart){
+        async function getDashBoardData(city){
             let results = await fetchLatestWeather(city);
             console.log(results);
             // id = "feelslike_c"
@@ -107,9 +106,11 @@
             // id = "uv"
             // id = "precip_mm"
             // id = "condition"
-            console.log(results["feelslike_c"]);
             replaceDashBoardValues(results);
         }
+        
+        getDashBoardData("ParisFR")
+
     </script>
 </body>
 </html>
