@@ -203,3 +203,32 @@ def weather_pattern_alerts(db, city_id, n=24, temp_change_threshold=10):
     else:
         print(f"No significant temperature change in {city_id} for the next {n} hours.")
     return result
+
+
+def create_wind_speed_pipeline(start_datetime, end_datetime, wind_speed_threshold):
+    return [
+        {"$match": {
+            'last_updated': {'$gte': start_datetime, '$lte': end_datetime},
+            "wind_kph": {"$gt": wind_speed_threshold}
+        }},
+        {"$project": {"_id": 0, "city_id": 1, "last_updated": 1, "wind_kph": 1, "wind_mph": 1, "wind_degree": 1, "wind_dir": 1, "gust_kph": 1, "gust_mph": 1}}
+    ]
+
+def get_high_wind_speed_cities(db, date, wind_speed_threshold):
+    collection = db["wind"]
+    start_datetime, end_datetime = get_day_start_end(date)
+
+    pipeline = create_wind_speed_pipeline(start_datetime, end_datetime, wind_speed_threshold)
+    result = aggregate_data(collection, pipeline)
+
+    data = []
+    for entry in result:
+        data.append({
+            "city": entry['city_id'],
+            "last_updated": entry['last_updated'],
+            "wind_kph": entry['wind_kph']
+        })
+
+    return data
+
+
