@@ -231,4 +231,11 @@ def get_high_wind_speed_cities(db, date, wind_speed_threshold):
 
     return data
 
+def get_daily_weather_data_pipeline(city_name, data_name, document_name, date):
+    start_of_day, end_of_day = get_full_day_range(date)
+    return [
+        {"$match": {'city_id': city_name, 'last_updated': {'$gte': start_of_day, '$lte': end_of_day}}},
+        {"$project": {"_id": 0, "city_id": 1, "last_updated": 1, data_name: 1}},
+        {"$sort": {"last_updated": 1}}
+    ]
 

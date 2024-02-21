@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoSQL Project</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<!-- <body>
+    <div>
+        <label for="city">City:</label>
+        <select id="city" name="city">
+            <option value="ParisFR" selected>Paris - France</option>
+            {% for city in cities %}
+                {% if city["_id"] != "ParisFR" %}
+                    <option value="{{ city['_id'] }}">{{ city["_id"][:-2] }} - {{ city["country"] }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+    </div>
+
+</body> -->
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <div class="flex flex-col p-4 w-1/4 rounded shadow  items-center">
+            <div class="flex justify-between">
+                <div class="flex flex-row w-full justify-around mb-3">
+                    <div class="w-1/2">
+                        <select class="block text-black-600 text-xs font-bold w-8/12" id="city" name="city">
+                            <option class="block text-stone-600 text-xs font-bold w-1/3" value="ParisFR" selected>Paris - France</option>
+                            {% for city in cities %}
+                                {% if city["_id"] != "ParisFR" %}
+                                    <option class="block text-stone-600 text-xs font-bold w-1/3" value="{{ city['_id'] }}">{{ city["_id"][:-2] }} - {{ city["country"] }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <span class="block text-black-600 text-sm font-bold mb-1" id="month">Today, Aug 30</span>
+                </div>
+            </div>
+            <div class="flex flex-row mb-4">
+                <span class="block text-black-600 text-sm font-bold mb-1 mr-5" id="day">Tuesday,</span>
+                <span class="block text-black-600 text-sm font-bold mb-1" id="time">11:47</span>
+            </div>
+            <div>
+                <span class="block text-xs font-bold mb-2">Sunny</span>
+
+            </div>
+            <div class="flex flex-col items-center mb-3">
+                <div class="flex flex-row mb-4">
+                    <span class="block text-black text-8xl" id = "temp_c">+26°</span>
+                </div>
+                <div class="flex flex-row mb-4">
+                    <span class="block text-black-600 text-xs mb-1 mr-1">Feels like</span>
+                    <span class="block text-black-600 text-xs mb-1" id = "feelslike_c">+29</span>
+                </div>
+            </div>
+            <div class="flex flex-col justify-between w-full">
+                <div class="flex flex-row justify-around mb-4 w-full">
+                    <span class="block text-black-600 text-sm font-bold mb-1 mr-5">Precipitations</span>
+                    <span class="block text-black-600 text-sm font-bold mb-1" id = "precip_mm">5%</span>
+                </div>
+                <div class="flex flex-row justify-around mb-4 w-full">
+                    <span class="block text-black-600 text-sm font-bold mb-1 mr-5">Wind Speed</span>
+                    <span class="block text-black-600 text-sm font-bold mb-1" id = "wind_kph">24.1 km/h</span>
+                </div>
+                <div class="flex flex-row justify-around mb-4 w-full">
+                    <span class="block text-black-600 text-sm font-bold mb-1 mr-5">Humidity</span>
+                    <span class="block text-black-600 text-sm font-bold mb-1" id = "humidity">63%</span>
+                </div>
+                <div class="flex flex-row justify-around mb-4 w-full">
+                    <span class="block text-black-600 text-sm font-bold mb-1 mr-5">Air Quality</span>
+                    <span class="block text-black-600 text-sm font-bold mb-1">23 AQI</span>
+                </div>
+                <div class="flex flex-row justify-around mb-4 w-full">
+                    <span class="block text-black-600 text-sm font-bold mb-1 mr-5">Pressure</span>
+                    <span class="block text-black-600 text-sm font-bold mb-1" id = "pressure_mb">1016 mb</span>
+                </div>
+                <div class="flex flex-row justify-around mb-4 w-full">
+                    <span class="block text-black-600 text-sm font-bold mb-1 mr-5">UV Index</span>
+                    <span class="block text-black-600 text-sm font-bold mb-1" id = "uv">-</span>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <script src="./../static/js/updateTime.js"></script>
+    <script type="module">
+        import { fetchLatestWeather } from "{{ url_for('static', filename='js/fetchData.js') }}";
+        import { replaceDashBoardValues } from "{{ url_for('static', filename='js/fillDashBoardValues.js') }}";
+        console.log(fetchLatestWeather);
+
+        // Event listener for when the selected city changes
+        document.getElementById('city').addEventListener('change', function() {
+            getDashBoardData(this.value)
+        });
+
+        async function getDashBoardData(city, chart){
+            let results = await fetchLatestWeather(city);
+            console.log(results);
+            // id = "feelslike_c"
+            // id = "temp_c"
+            // id = "wind_kph"
+            // id = "humidity"
+            // id = "pressure_mb"
+            // id = "uv"
+            // id = "precip_mm"
+            // id = "condition"
+            console.log(results["feelslike_c"]);
+            replaceDashBoardValues(results);
+        }
+    </script>
+</body>
+</html>
+</html>
