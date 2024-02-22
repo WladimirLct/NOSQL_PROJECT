@@ -166,9 +166,6 @@ def format_latest_data(result, city_name, data_name):
     return city_name, None, None
 
 
-def format_daily_data(results, data_name):
-    return [[r['city_id'], r['last_updated'].strftime('%Y-%m-%d %H:%M:%S'), r[data_name]] for r in results]
-
 
 def create_weather_pattern_alerts_pipeline(city_id, n, temp_change_threshold):
     current_datetime = datetime.utcnow()
@@ -230,5 +227,42 @@ def get_high_wind_speed_cities(db, date, wind_speed_threshold):
         })
 
     return data
+
+
+def get_last_and_next_temperatures(db, city_name,document_name,data_name):
+    current_datetime = datetime.utcnow()
+    
+    # Récupérer les trois dernières températures de la collection "temperatures"
+    last_temps_pipeline = [
+        {"$match": {'city_id': city_name}},
+        {"$sort": {"time": -1}},
+        {"$project": {"_id": 0, "city_id" : 1,"last_updated": 1, data_name: 1}}
+    ]
+
+    last_temps_result = aggregate_data(db[document_name], last_temps_pipeline)
+
+    # Récupérer les 6 prochaines températures de la collection "forecast_temperatures"
+    next_temps_pipeline = [
+        {"$match": {'city_id': city_name, 'time': {'$gt': current_datetime}}},
+        {"$sort": {"time": 1}},
+        {"$limit": 6},
+        {"$project": {"_id": 0, "city_id" : 1,"time": 1, data_name: 1}}
+    ]
+
+    next_temps_result = aggregate_data(db['forecast_'+document_name], next_temps_pipeline)
+
+    data = last_temps_result[len(last_temps_result)-3:] + next_temps_result[1::2]
+
+    return format_last_and_next_temperatures(data, data_name)
+
+def format_last_and_next_temperatures(results, data_name):
+    label = 'last_updated' if data_name == 'last-updated' else 'time'
+    return [[r['city_id'], r['last_updated'].strftime('%Y-%m-%d %H:%M:%S') if 'last_updated' in r else r['time'].strftime('%Y-%m-%d %H:%M:%S'), r[data_name]] for r in results]
+
+
+def format_daily_data(results, data_name):
+    return [[r['city_id'], r['last_updated'].strftime('%Y-%m-%d %H:%M:%S'), r[data_name]] for r in results]
+
+
 
 

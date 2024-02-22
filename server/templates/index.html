@@ -73,6 +73,7 @@
         import { createHistogram } from "{{ url_for('static', filename='js/chartGen.js') }}";
         import { createScatterPlot } from "{{ url_for('static', filename='js/chartGen.js') }}";
         import { fetchDailyHistory } from "{{ url_for('static', filename='js/fetchData.js') }}";
+        import { fetchLastandNextData } from "{{ url_for('static', filename='js/fetchData.js') }}";
         
 
         showChart("ParisFR")
@@ -89,7 +90,7 @@
 
         async function showChart(city, chart){
             const date = (new Date()).toISOString().split('T')[0];; //To this format : 2024-02-16
-            let [ labels, results ] = await fetchDailyHistory(city, 'temp_c', 'temperatures', date);
+            let [ labels, results ] = await fetchLastandNextData(city, 'temp_c', 'temperatures', date);
             createChart(daily_temp_chart, 'line', labels, 'Temperature (°C)', results, 'rgb(75, 192, 192)', 0.1, false);
         }
 
@@ -101,7 +102,7 @@
 
         async function showScatt(city, chart){
         const date = (new Date()).toISOString().split('T')[0];
-        let [ labels, results ] = await fetchDailyHistory(city, 'humidity', 'precipitations', date);
+        let [ labels, results ] = await fetchLastandNextData(city, 'humidity', 'precipitations', date);
 
         // Convertir les chaînes en nombres
         labels = labels.map(label => label.replace(/^(\d+)$/, '$1:00:00'));
