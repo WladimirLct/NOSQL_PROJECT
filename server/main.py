@@ -63,5 +63,13 @@ def get_bad_air_quality_cities():
     return flask.jsonify(result)
 
 
+@app.route('/get_last_and_next_temperatures', methods=['GET'])
+def get_last_and_next_temperatures():
+    city_name = flask.request.args.get('city_name')
+    data_name = flask.request.args.get('data_name')
+    document_name = flask.request.args.get('document_name')
+    result = mongo_handler.get_last_and_next_temperatures(db, city_name,document_name,data_name)
+    return flask.jsonify(result)
+
 if __name__ == '__main__':
     app.run(port=port, debug=True)
