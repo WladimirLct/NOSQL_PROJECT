@@ -11,7 +11,6 @@
 
     <div class="flex space-x-4">
 
-        <!-- First Gray Frame -->
         <div class="w-1/2 bg-gray-200 p-4">
             <h1 class="text-2xl font-bold mb-4">Weather App</h1>
 
@@ -26,6 +25,14 @@
             {% endfor %}
         </select>
     </div>
+</div>
+
+
+<div class="w-1/2 bg-gray-200 p-4">
+    <h1 class="text-2xl font-bold mb-4"></h1>
+
+    <div class="mb-4">
+    </div>
 
     <div class="flex justify-center">
         <canvas id="dailyTempChart" class="bg-white p-4"></canvas>
@@ -34,33 +41,49 @@
 
     
     <div class="w-1/2 bg-gray-200 p-4">
-        <h1 class="text-2xl font-bold mb-4">Weather App</h1>
+        <h1 class="text-2xl font-bold mb-4"></h1>
 
         <div class="mb-4">
         </div>
 
         <div class="flex justify-center">
-            <canvas id="caca" class="bg-white p-4"></canvas>
+            <canvas id="dailyUV" class="bg-white p-4"></canvas>
+        </div>
+</div>
+
+    <div class="w-1/2 bg-gray-200 p-4">
+        <h1 class="text-2xl font-bold mb-4"></h1>
+
+        <div class="mb-4">
+        </div>
+
+        <div class="flex justify-center">
+            <canvas id="dailyHumidityChart" class="bg-white p-4"></canvas>
         </div>
 </div>
 
     <script>
         const daily_temp_chart = document.getElementById('dailyTempChart').getContext('2d');
-        const daily_temp = document.getElementById('caca').getContext('2d');
+        const daily_uv = document.getElementById('dailyUV').getContext('2d');
+        const daily_humidity = document.getElementById('dailyHumidityChart').getContext('2d');
     </script>
 
     <script type="module">
         import { createChart } from "{{ url_for('static', filename='js/chartGen.js') }}";
         import { createHistogram } from "{{ url_for('static', filename='js/chartGen.js') }}";
+        import { createScatterPlot } from "{{ url_for('static', filename='js/chartGen.js') }}";
         import { fetchDailyHistory } from "{{ url_for('static', filename='js/fetchData.js') }}";
+        
 
         showChart("ParisFR")
         showHist("ParisFR")
+        showScatt("ParisFR")
 
         // Event listener for when the selected city changes
         document.getElementById('city').addEventListener('change', function() {
             showChart(this.value, daily_temp_chart)
-            showHist(this.value, daily_temp)
+            showHist(this.value, daily_uv)
+            showScatt(this.value, daily_humidity)
         });
 
 
@@ -73,8 +96,23 @@
         async function showHist(city, chart){
             const date = (new Date()).toISOString().split('T')[0];; //To this format : 2024-02-16
             let [ labels, results ] = await fetchDailyHistory(city, 'uv', 'basics', date);
-            createHistogram(daily_temp, labels, results);
+            createHistogram(daily_uv, labels, results);
         }
+
+        async function showScatt(city, chart){
+        const date = (new Date()).toISOString().split('T')[0];
+        let [ labels, results ] = await fetchDailyHistory(city, 'humidity', 'precipitations', date);
+
+        // Convertir les chaînes en nombres
+        labels = labels.map(label => label.replace(/^(\d+)$/, '$1:00:00'));
+        results = results.map(result => parseInt(result, 10));
+
+        // Créer un tableau d'objets avec des propriétés x et y
+        const dataPoints = labels.map((label, index) => ({ x: index, y: results[index] }));
+
+        createScatterPlot(daily_humidity, labels, dataPoints, 'https://upload.wikimedia.org/wikipedia/commons/b/b7/Goutte_d%27eau.png');
+    }
+
         
     </script>
 </body>

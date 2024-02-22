@@ -1,3 +1,5 @@
+
+
 function createChart(ctx, chartType, labels, datasetLabel, dataPoints, borderColor, tension, beginAtZero) {
     // First destroy the existing chart, if any
     if (window["temperatureWaveChart" + ctx.canvas.id]) {
@@ -82,13 +84,74 @@ function createHistogram(ctx, labels, dataPoints ) {
                 }
             },
             plugins: {
+            legend: {
+                display: false // Hide the legend
+            },
+        }
+    }
+    });
+}
+
+function createScatterPlot(ctx, labels, dataPoints, imageSrc) {
+    // First destroy the existing chart, if any
+    if (window["scatterPlotChart" + ctx.canvas.id]) {
+        window["scatterPlotChart" + ctx.canvas.id].destroy();
+    }
+    const img = new Image();
+    img.src = imageSrc;
+    img.width = 20;
+    img.height = 23;
+
+    // Create a scatter plot with custom image points
+    window["scatterPlotChart" + ctx.canvas.id] = new Chart(ctx, {
+        type: 'scatter',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Humidity",
+                data: dataPoints,
+                pointStyle: img,
+            }]
+        },
+        options: {
+            clip: false,
+            scales: {
+                x: {
+                    grid : {
+                        display : false
+                    },
+                    type: 'linear',
+                    position: 'bottom',
+                    ticks: {
+                        stepSize: 1,
+                        callback: function (value, index) {
+                            return labels[index];
+                        }
+                    }
+                },
+                y: {
+                    grid : {
+                        display : false
+                    },
+                    min: 0,  // Set minimum value for the y-axis
+                    max: 100,  // Set maximum value for the y-axis
+                }
+            },
+            plugins: {
                 legend: {
-                    display: false // Hide the legend
+                    display: false
                 }
             }
         }
     });
 }
+
+
+
+
+export { createScatterPlot };
+
+
 
 export { createHistogram };
 
