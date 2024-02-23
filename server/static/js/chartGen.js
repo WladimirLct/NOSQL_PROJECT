@@ -1,4 +1,4 @@
-function createChart(ctx, chartType, labels, datasetLabel, dataPoints, borderColor, tension, beginAtZero) {
+function createChart(ctx, labels, dataPoints) {
     // First destroy the existing chart, if any
     if (window["temperatureWaveChart" + ctx.canvas.id]) {
         window["temperatureWaveChart" + ctx.canvas.id].destroy();
@@ -48,7 +48,7 @@ function createChart(ctx, chartType, labels, datasetLabel, dataPoints, borderCol
     });
 }
 
-function createHistogram(ctx, labels, dataPoints ) {
+function createHistogram(ctx, labels, dataPoints) {
     // First destroy the existing chart, if any
     if (window["histogramChart" + ctx.canvas.id]) {
         window["histogramChart" + ctx.canvas.id].destroy();
@@ -62,33 +62,45 @@ function createHistogram(ctx, labels, dataPoints ) {
             datasets: [{
                 label: 'Temperature Wave',
                 data: dataPoints,
-                borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 2,
-                fill: false, // Fill the area under the line
-                tension: 0.4, // Adjust the curve tension
+                backgroundColor: dataPoints.map(value => {
+                    if (value <= 2) {
+                        return 'rgba(0, 255, 0, 0.7)'; 
+                    } else if (value <= 5) {
+                        return 'rgba(255, 255, 0, 0.7)';
+                    } else if (value <= 7) {
+                        return 'rgba(255, 165, 0, 0.7)';
+                    } else if (value === 11) {
+                        return 'rgba(128, 0, 128, 0.7)'; 
+                    } else {
+                        return 'rgba(255, 0, 0, 0.7)'; 
+                    }
+                }),
             }]
         },
         options: {
             scales: {
                 x: {
-                    grid : {
-                        display : false
-                    }
+                    grid: {
+                        display: false
+                    },
                 },
                 y: {
-                    grid : {
-                        display : false
+                    grid: {
+                        display: false,
                     },
                 }
             },
             plugins: {
-            legend: {
-                display: false // Hide the legend
-            },
+                legend: {
+                    display: false // Hide the legend
+                },
+            }
         }
-    }
     });
 }
+
+
+
 
 function createScatterPlot(ctx, labels, dataPoints, imageSrc) {
     // First destroy the existing chart, if any

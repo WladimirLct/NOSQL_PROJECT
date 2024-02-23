@@ -263,24 +263,3 @@ def format_last_and_next_temperatures(results, data_name):
 
 def format_daily_data(results, data_name):
     return [[r['city_id'], r['last_updated'].strftime('%Y-%m-%d %H:%M:%S'), r[data_name]] for r in results]
-
-
-def get_sunrise_sunset(db, city_name):
-    collection = db["basics"]
-    #get the last updated, sunrise and sunset for the city
-    query = [
-        {"$match": {"city_id": city_name}},
-        {"$sort": {"last_updated": -1}},
-        {"$limit": 1},
-        {"$project": {"_id": 0, 'last_updated' : 1, "city_id": 1, "sunrise": 1, "sunset": 1}}
-    ]
-    results = list(collection.aggregate(query))
-    return format_sunrise_sunset(results)
-
-def format_sunrise_sunset(results):
-    for d in results :
-        sunset = datetime.utcfromtimestamp(d["sunset"])
-        sunrise = datetime.utcfromtimestamp(d["sunrise"])
-    return [sunset,sunrise]
-    
-print(get_sunrise_sunset(connect_to_mongo(), "Paris"))
