@@ -6,21 +6,8 @@
     <title>NoSQL Project</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
-<!-- <body>
-    <div>
-        <label for="city">City:</label>
-        <select id="city" name="city">
-            <option value="ParisFR" selected>Paris - France</option>
-            {% for city in cities %}
-                {% if city["_id"] != "ParisFR" %}
-                    <option value="{{ city['_id'] }}">{{ city["_id"][:-2] }} - {{ city["country"] }}</option>
-                {% endif %}
-            {% endfor %}
-        </select>
-    </div>
-
-</body> -->
 <body class="bg-gray-100">
     <div class="container mx-auto p-4">
         <div class="flex flex-col p-4 w-1/4 rounded shadow  items-center">
@@ -49,44 +36,61 @@
             </div>
             <div class="flex flex-col items-center mb-3">
                 <div class="flex flex-row mb-4">
-                    <span class="block text-black text-8xl" id = "temp_c">+26</span>
-                    <p class="block text-black text-5xl"><sup>°C</sup></p>
+                    <span class="block text-black text-8xl" id="temp_c">+26</span>
+                    <p class="block text-black text-5xl" id = "temp_color"><sup>°C</sup></p>
                 </div>
                 <div class="flex flex-row mb-4">
                     <span class="block text-black-600 text-xs mb-1 mr-1">Feels like</span>
                     <span class="block text-black-600 text-xs mb-1" id = "feelslike_c">+29</span>
                 </div>
             </div>
-            <div class="flex flex-col justify-between w-full">
-                <div class="flex flex-row justify-around mb-4 w-full">
-                    <span class="block text-black-600 text-sm font-bold mb-1 mr-5">Precipitations</span>
-                    <span class="block text-black-600 text-sm font-bold mb-1" id = "precip_mm">5%</span>
+            <div class="w-5/6">
+                <div class="flex flex-row justify-between mb-4 w-full">
+                    <span class="block text-black-600 text-sm mb-1 mr-5">Precipitations</span>
+                    <div class = "flex flex-row justify-between w-5/12">
+                        <i class="fa-solid fa-droplet" style="color: #74C0FC;"></i> 
+                        <span class="block text-black-600 text-sm mb-1" id = "precip_mm">5%</span>
+                    </div>
                 </div>
-                <div class="flex flex-row justify-around mb-4 w-full">
-                    <span class="block text-black-600 text-sm font-bold mb-1 mr-5">Wind Speed</span>
-                    <span class="block text-black-600 text-sm font-bold mb-1" id = "wind_kph">24.1 km/h</span>
+                <div class="flex flex-row justify-between mb-4 w-full">
+                    <span class="block text-black-600 text-sm mb-1 mr-5">Wind Speed</span>
+                    <div class = "flex flex-row justify-between w-5/12">
+                        <i class="fa-solid fa-circle text-xs" style="color: #4cb804;"></i> 
+                        <span class="block text-black-600 text-sm mb-1" id = "wind_kph">24.1 km/h</span>
+                    </div>
                 </div>
-                <div class="flex flex-row justify-around mb-4 w-full">
-                    <span class="block text-black-600 text-sm font-bold mb-1 mr-5">Humidity</span>
-                    <span class="block text-black-600 text-sm font-bold mb-1" id = "humidity">63%</span>
+                <div class="flex flex-row justify-between mb-4 w-full">
+                    <span class="block text-black-600 text-sm mb-1 mr-5">Humidity</span>
+                    <div class = "flex flex-row justify-between w-5/12">
+                        <i class="fa-solid fa-circle text-xs" style="color: #ffd404;"></i>
+                        <span class="block text-black-600 text-sm mb-1" id = "humidity">63%</span>
+                    </div>
                 </div>
-                <div class="flex flex-row justify-around mb-4 w-full">
-                    <span class="block text-black-600 text-sm font-bold mb-1 mr-5">Air Quality</span>
-                    <span class="block text-black-600 text-sm font-bold mb-1">23 AQI</span>
+                <div class="flex flex-row justify-between mb-4 w-full">
+                    <span class="block text-black-600 text-sm mb-1 mr-5">Air Quality</span>
+                    <div class = "flex flex-row justify-between w-5/12">
+                        <i class="fa-solid fa-circle text-xs" style="color: #accc0c;"></i> 
+                        <span class="block text-black-600 text-sm mb-1">23 AQI</span>
+                    </div>
                 </div>
-                <div class="flex flex-row justify-around mb-4 w-full">
-                    <span class="block text-black-600 text-sm font-bold mb-1 mr-5">Pressure</span>
-                    <span class="block text-black-600 text-sm font-bold mb-1" id = "pressure_mb">1016 mb</span>
+                <div class="flex flex-row justify-between mb-4 w-full">
+                    <span class="block text-black-600 text-sm mb-1 mr-5">Pressure</span>
+                    <div class = "flex flex-row justify-between w-5/12">
+                        <i class="fa-solid fa-circle text-xs" style="color: #d11515;"></i>
+                        <span class="block text-black-600 text-sm mb-1" id = "pressure_mb">1016 mb</span>
+                    </div>
                 </div>
-                <div class="flex flex-row justify-around mb-4 w-full">
-                    <span class="block text-black-600 text-sm font-bold mb-1 mr-5">UV Index</span>
-                    <span class="block text-black-600 text-sm font-bold mb-1" id = "uv">-</span>
+                <div class="flex flex-row justify-between mb-4 w-full">
+                    <span class="block text-black-600 text-sm mb-1 mr-5">UV Index</span>
+                    <div class = "flex flex-row justify-between w-5/12">
+                        <i class="fa-solid fa-circle text-xs" style="color: #4cb804;"></i> 
+                        <span class="block text-black-600 text-sm mb-1" id = "uv">-</span>
+                    </div>
                 </div>
             </div>
             
         </div>
     </div>
-    <script src="./../static/js/updateTime.js"></script>
     <script type="module">
         import { fetchLatestWeather } from "{{ url_for('static', filename='js/fetchData.js') }}";
         import { replaceDashBoardValues } from "{{ url_for('static', filename='js/fillDashBoardValues.js') }}";

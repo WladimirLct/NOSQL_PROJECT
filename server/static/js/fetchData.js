@@ -14,7 +14,7 @@ export { fetchDailyHistory };
 async function fetchLatestWeather(cityId) {
     const response = await fetch(`/get_all_latest_weather_data?city_name=${cityId}`);
     const data = await response.json();
-
+    
     return data;
 }
 
