@@ -1,5 +1,3 @@
-
-
 function createChart(ctx, chartType, labels, datasetLabel, dataPoints, borderColor, tension, beginAtZero) {
     // First destroy the existing chart, if any
     if (window["temperatureWaveChart" + ctx.canvas.id]) {
