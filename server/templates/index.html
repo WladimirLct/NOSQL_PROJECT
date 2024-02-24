@@ -6,253 +6,339 @@
     <title>NoSQL Project</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.0/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+
+    <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/831/831682.png" type="image/x-icon">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
 <style>
     .main_frame {
-        width: 900px;
+        width: 1200px;
     }
 </style>
 
 <body class="main_frame mx-auto font-poppins">
-    <h1>Weather App</h1>
+    <div class="flex w-full h-screen flex items-center justify-center">
+        <div class="shrink-0 container mx-auto p-4 pt-0 w-96 h-full">
+            <div class="flex flex-col bg-stone-50 items-center justify-center h-full">
+                <div class="flex flex-row mb-1">
+                    <p class="block text-black-600 text-lg font-bold mb-1" >
+                        <span id="day">Tuesday,</span>
+                        <span id="time">11:47</span>
+                    </p>
+                </div>
+                <div class="flex flex-col items-center mb-2">
+                    <img  id= "conditionImg" src="//cdn.weatherapi.com/weather/64x64/night/143.png" alt="weather" style="width: 100px;">
+                    <span class="block text-xs font-bold mb-2 " id = "condition">Sunny</span>
+                </div>
+                <div class="flex flex-col items-center mb-3">
+                    <div class="flex flex-row mb-4">
+                        <p>
+                            <span class="block text-black text-8xl temp" id="temp_c">+26</span>
+                            <p class="text-5xl temp"><sup>°C</sup></p>
+                        </p>
+                    </div>
+                    <div class="flex flex-row mb-4">
+                        <p class="block text-black-600 text-xs mb-1">
+                            <span>Feels like </span>
+                            <span id="feelslike_c">+29</span>
+                        </p>
+                    </div>
+                </div>
 
-    <div class="container mx-auto p-4">
-        <div class="flex flex-col p-4 bg-stone-100 rounded-xl items-center">
-            <div class="flex w-full justify-between">
-                <div class="flex flex-row w-full justify-around mb-3">
-                    <div class="w-1/3 mx-4">
-                        <h1 class="font-bold text-lg">Cities :</h1>
-                        <select class="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" id="city" name="city">
-                            <option class="block text-stone-600 text-xs font-bold w-1/3" value="ParisFR" selected>Paris - France</option>
-                            {% for city in cities %}
-                                {% if city["_id"] != "ParisFR" %}
-                                    <option class="block text-stone-600 text-xs font-bold w-1/3" value="{{ city['_id'] }}">{{ city["_id"][:-2] }} - {{ city["country"] }}</option>
-                                {% endif %}
-                            {% endfor %}
-                        </select>
+                <div class="w-5/6">
+                    <div class="flex flex-row justify-between mb-4 w-full">
+                        <span class="block text-black-600 text-sm mb-1 mr-5">Precipitations</span>
+                        <div class = "flex flex-row justify-between w-5/12">
+                            <i class="fa-solid fa-droplet" id = "iprecip" style="color: #74C0FC;"></i> 
+                            <span class="block text-black-600 text-sm mb-1" id = "precip_mm">5%</span>
+                        </div>
                     </div>
-                    <div class="w-1/3 mx-4">
-                        <h1 class="font-bold text-lg">Local time :</h1>
-                        <select class="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" id="date" name="date">
-                        </select>
+                    <div class="flex flex-row justify-between mb-4 w-full">
+                        <span class="block text-black-600 text-sm mb-1 mr-5">Wind Speed</span>
+                        <div class = "flex flex-row justify-between w-5/12">
+                            <i class="fa-solid fa-circle text-xs" id = "iws" style="color: #4cb804;"></i> 
+                            <span class="block text-black-600 text-sm mb-1" id = "wind_kph">24.1 km/h</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-row justify-between mb-4 w-full">
+                        <span class="block text-black-600 text-sm mb-1 mr-5">Humidity</span>
+                        <div class = "flex flex-row justify-between w-5/12">
+                            <i class="fa-solid fa-circle text-xs" id = "ih" style="color: #ff9204;"></i>
+                            <span class="block text-black-600 text-sm mb-1" id = "humidity">63%</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-row justify-between mb-4 w-full">
+                        <span class="block text-black-600 text-sm mb-1 mr-5">Visibility</span>
+                        <div class = "flex flex-row justify-between w-5/12">
+                            <i class="fa-solid fa-circle text-xs" id = "ivk" style="color: #accc0c;"></i> 
+                            <span class="block text-black-600 text-sm mb-1" id = "vis_km">10 km</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-row justify-between mb-4 w-full">
+                        <span class="block text-black-600 text-sm mb-1 mr-5">Pressure</span>
+                        <div class = "flex flex-row justify-between w-5/12">
+                            <i class="fa-solid fa-circle text-xs" id = "ipm" style="color: #d11515;"></i>
+                            <span class="block text-black-600 text-sm mb-1" id = "pressure_mb">1016 mb</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-row justify-between mb-4 w-full">
+                        <span class="block text-black-600 text-sm mb-1 mr-5">UV Index</span>
+                        <div class = "flex flex-row justify-between w-5/12">
+                            <i class="fa-solid fa-circle text-xs" id = "iuv" style="color: #4cb804;"></i> 
+                            <span class="block text-black-600 text-sm mb-1" id = "uv">-</span>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="flex flex-row mb-1">
-                <p class="block text-black-600 text-lg font-bold mb-1" >
-                    <span id="day">Tuesday,</span>
-                    <span id="time">11:47</span>
-                </p>
+        </div>
+        
+        <div class="flex flex-col shrink">
+            <div class="p-4 pt-0 w-full">
+                <div class="grid grid-cols-2 gap-4 justify-around">
+                    <div class="p-4 w-full bg-stone-50 rounded-lg flex w-full justify-between">
+                        <div class="flex flex-col w-full justify-center align-center">
+                            <div class="mx-4 mb-4">
+                                <h1 class="font-bold text-lg">City :</h1>
+                                <select class="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" id="city" name="city">
+                                    <option class="block text-stone-600 text-xs font-bold w-full" value="ParisFR" selected>Paris - France</option>
+                                    {% for city in cities %}
+                                        {% if city["_id"] != "ParisFR" %}
+                                            <option class="block text-stone-600 text-xs font-bold w-full" value="{{ city['_id'] }}">{{ city["_id"][:-2] }} - {{ city["country"] }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mx-4">
+                                <h1 class="font-bold text-lg">Local time :</h1>
+                                <select class="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" id="date" name="date">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 w-full bg-stone-50 rounded-lg h-full">Temperatures (°C) <sub>Recorded and forcasted</sub>
+                        <div class="flex justify-center">
+                            <canvas id="dailyTempCanvas" class=" h-full"></canvas>
+                        </div>
+                    </div>
+                    <div class = "p-4 w-full bg-stone-50 rounded-lg h-full">Humidity (%) <sub>Recorded and forcasted</sub>
+                        <div class="flex justify-center">
+                            <canvas id="dailyHumidityCanvas" class=" h-full"></canvas>
+                        </div>
+                    </div>
+                    <div class="p-4 w-full bg-stone-50 rounded-lg h-full">UV Index <sub>Recorded</sub>
+                        <div class="flex justify-center">
+                            <canvas id="dailyUVCanvas" class=" h-full"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="flex flex-col items-center mb-2">
-                <img  id= "conditionImg" src="//cdn.weatherapi.com/weather/64x64/night/143.png" alt="weather">
-                <span class="block text-xs font-bold mb-2 " id = "condition">Sunny</span>
-            </div>
-            <div class="flex flex-col items-center mb-3">
-                <div class="flex flex-row mb-4">
-                    <p>
-                        <span class="block text-black text-8xl temp" id="temp_c">+26</span>
-                        <p class="text-5xl temp"><sup>°C</sup></p>
-                    </p>
-                </div>
-                <div class="flex flex-row mb-4">
-                    <p class="block text-black-600 text-xs mb-1">
-                        <span>Feels like </span>
-                        <span id="feelslike_c">+29</span>
-                    </p>
-                </div>
-            </div>
-            <div class="w-5/6">
-                <div class="flex flex-row justify-between mb-4 w-full">
-                    <span class="block text-black-600 text-sm mb-1 mr-5">Precipitations</span>
-                    <div class = "flex flex-row justify-between w-5/12">
-                        <i class="fa-solid fa-droplet" id = "iprecip" style="color: #74C0FC;"></i> 
-                        <span class="block text-black-600 text-sm mb-1" id = "precip_mm">5%</span>
+
+            <div id="forecast_div" class="flex justify-between w-full">
+                <div id="forecast_1" class="p-3 w-1/3 mx-4 rounded-xl">
+                    <div class="title flex items-center justify-between mb-2 align-baseline">
+                        <h1 class="pr-2">Day</h1>
+                        <p class="text-stone-400 text-xs align-baseline">Date</p>
+                    </div>
+        
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="weather mx-auto flex-col">
+                            <img src="//cdn.weatherapi.com/weather/64x64/day/302.png" class="mx-auto">
+                            <p class="text-stone-400 text-center mx-auto text-xs">Sunny</p>
+                        </div>
+        
+                        <div class="temps w-fit ml-auto">
+                            <div class="flex items-center justify-between text-red-500">
+                                <i class="fa-solid fa-arrow-up pr-2"></i> <p>0°C</p>
+                            </div>
+                            <div class="flex items-center justify-between text-blue-500">
+                                <i class="fa-solid fa-arrow-down pr-2"></i> <p>0°C</p>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="avg-info my-2 text-xs">
+                        <p class="text-stone-500">Avg Temp: <span class="text-stone-600">0°C</span>, avg Humidity: <span class="text-stone-600">0%</span></p>
+                        <p class="text-stone-500">UV index: <span class="text-stone-600">0</span></p>
                     </div>
                 </div>
-                <div class="flex flex-row justify-between mb-4 w-full">
-                    <span class="block text-black-600 text-sm mb-1 mr-5">Wind Speed</span>
-                    <div class = "flex flex-row justify-between w-5/12">
-                        <i class="fa-solid fa-circle text-xs" id = "iws" style="color: #4cb804;"></i> 
-                        <span class="block text-black-600 text-sm mb-1" id = "wind_kph">24.1 km/h</span>
+        
+                <div id="forecast_2" class="p-3 w-1/3 mx-4 rounded-xl">
+                        <div class="title flex items-center justify-between mb-2 align-baseline">
+                        <h1 class="pr-2">Day</h1>
+                        <p class="text-stone-400 text-xs align-baseline">Date</p>
+                    </div>
+        
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="weather mx-auto flex-col">
+                            <img src="//cdn.weatherapi.com/weather/64x64/day/302.png" class="mx-auto">
+                            <p class="text-stone-400 text-center mx-auto text-xs">Sunny</p>
+                        </div>
+        
+                        <div class="temps w-fit ml-auto">
+                            <div class="flex items-center justify-between text-red-500">
+                                <i class="fa-solid fa-arrow-up pr-2"></i> <p>0°C</p>
+                            </div>
+                            <div class="flex items-center justify-between text-blue-500">
+                                <i class="fa-solid fa-arrow-down pr-2"></i> <p>0°C</p>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="avg-info my-2 text-xs">
+                        <p class="text-stone-500">Avg Temp: <span class="text-stone-600">0°C</span>, avg Humidity: <span class="text-stone-600">0%</span></p>
+                        <p class="text-stone-500">UV index: <span class="text-stone-600">0</span></p>
                     </div>
                 </div>
-                <div class="flex flex-row justify-between mb-4 w-full">
-                    <span class="block text-black-600 text-sm mb-1 mr-5">Humidity</span>
-                    <div class = "flex flex-row justify-between w-5/12">
-                        <i class="fa-solid fa-circle text-xs" id = "ih" style="color: #ff9204;"></i>
-                        <span class="block text-black-600 text-sm mb-1" id = "humidity">63%</span>
+        
+                <div id="forecast_3" class="p-3 w-1/3 mx-4 rounded-xl">
+                        <div class="title flex items-center justify-between mb-2 align-baseline">
+                        <h1 class="pr-2">Day</h1>
+                        <p class="text-stone-400 text-xs align-baseline">Date</p>
                     </div>
-                </div>
-                <div class="flex flex-row justify-between mb-4 w-full">
-                    <span class="block text-black-600 text-sm mb-1 mr-5">Visibility</span>
-                    <div class = "flex flex-row justify-between w-5/12">
-                        <i class="fa-solid fa-circle text-xs" id = "ivk" style="color: #accc0c;"></i> 
-                        <span class="block text-black-600 text-sm mb-1" id = "vis_km">10 km</span>
+        
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="weather mx-auto flex-col">
+                            <img src="//cdn.weatherapi.com/weather/64x64/day/302.png" class="mx-auto">
+                            <p class="text-stone-400 text-center mx-auto text-xs">Sunny</p>
+                        </div>
+        
+                        <div class="temps w-fit ml-auto">
+                            <div class="flex items-center justify-between text-red-500">
+                                <i class="fa-solid fa-arrow-up pr-2"></i> <p>0°C</p>
+                            </div>
+                            <div class="flex items-center justify-between text-blue-500">
+                                <i class="fa-solid fa-arrow-down pr-2"></i> <p>0°C</p>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="flex flex-row justify-between mb-4 w-full">
-                    <span class="block text-black-600 text-sm mb-1 mr-5">Pressure</span>
-                    <div class = "flex flex-row justify-between w-5/12">
-                        <i class="fa-solid fa-circle text-xs" id = "ipm" style="color: #d11515;"></i>
-                        <span class="block text-black-600 text-sm mb-1" id = "pressure_mb">1016 mb</span>
-                    </div>
-                </div>
-                <div class="flex flex-row justify-between mb-4 w-full">
-                    <span class="block text-black-600 text-sm mb-1 mr-5">UV Index</span>
-                    <div class = "flex flex-row justify-between w-5/12">
-                        <i class="fa-solid fa-circle text-xs" id = "iuv" style="color: #4cb804;"></i> 
-                        <span class="block text-black-600 text-sm mb-1" id = "uv">-</span>
+        
+                    <div class="avg-info my-2 text-xs">
+                        <p class="text-stone-500">Avg Temp: <span class="text-stone-600">0°C</span>, avg Humidity: <span class="text-stone-600">0%</span></p>
+                        <p class="text-stone-500">UV index: <span class="text-stone-600">0</span></p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="forecast_div" class="flex justify-between w-full">
-        <div id="forecast_1" class="p-3 w-1/3 mx-4 h-full bg-stone-100 rounded-xl">
-            <div class="title flex items-center justify-between mb-2 align-baseline">
-                <h1 class="pr-2">Day</h1>
-                <p class="text-stone-400 text-xs align-baseline">Date</p>
-            </div>
-
-            <div class="flex items-center justify-between mb-2">
-                <div class="weather mx-auto flex-col">
-                    <img src="//cdn.weatherapi.com/weather/64x64/day/302.png" class="mx-auto">
-                    <p class="text-stone-400 text-center mx-auto text-xs">Sunny</p>
-                </div>
-
-                <div class="temps w-fit ml-auto">
-                    <div class="flex items-center justify-between text-red-500">
-                        <i class="fa-solid fa-arrow-up pr-2"></i> <p>0°C</p>
-                    </div>
-                    <div class="flex items-center justify-between text-blue-500">
-                        <i class="fa-solid fa-arrow-down pr-2"></i> <p>0°C</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="avg-info my-2 text-xs">
-                <p class="text-stone-500">Avg Temp: <span class="text-stone-600">0°C</span>, avg Humidity: <span class="text-stone-600">0%</span></p>
-                <p class="text-stone-500">UV index: <span class="text-stone-600">0</span></p>
-            </div>
-        </div>
-
-        <div id="forecast_2" class="p-3 w-1/3 mx-4 h-full bg-stone-100 rounded-xl">
-                        <div class="title flex items-center justify-between mb-2 align-baseline">
-                <h1 class="pr-2">Day</h1>
-                <p class="text-stone-400 text-xs align-baseline">Date</p>
-            </div>
-
-            <div class="flex items-center justify-between mb-2">
-                <div class="weather mx-auto flex-col">
-                    <img src="//cdn.weatherapi.com/weather/64x64/day/302.png" class="mx-auto">
-                    <p class="text-stone-400 text-center mx-auto text-xs">Sunny</p>
-                </div>
-
-                <div class="temps w-fit ml-auto">
-                    <div class="flex items-center justify-between text-red-500">
-                        <i class="fa-solid fa-arrow-up pr-2"></i> <p>0°C</p>
-                    </div>
-                    <div class="flex items-center justify-between text-blue-500">
-                        <i class="fa-solid fa-arrow-down pr-2"></i> <p>0°C</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="avg-info my-2 text-xs">
-                <p class="text-stone-500">Avg Temp: <span class="text-stone-600">0°C</span>, avg Humidity: <span class="text-stone-600">0%</span></p>
-                <p class="text-stone-500">UV index: <span class="text-stone-600">0</span></p>
-            </div>
-        </div>
-
-        <div id="forecast_3" class="p-3 w-1/3 mx-4 h-full bg-stone-100 rounded-xl">
-                        <div class="title flex items-center justify-between mb-2 align-baseline">
-                <h1 class="pr-2">Day</h1>
-                <p class="text-stone-400 text-xs align-baseline">Date</p>
-            </div>
-
-            <div class="flex items-center justify-between mb-2">
-                <div class="weather mx-auto flex-col">
-                    <img src="//cdn.weatherapi.com/weather/64x64/day/302.png" class="mx-auto">
-                    <p class="text-stone-400 text-center mx-auto text-xs">Sunny</p>
-                </div>
-
-                <div class="temps w-fit ml-auto">
-                    <div class="flex items-center justify-between text-red-500">
-                        <i class="fa-solid fa-arrow-up pr-2"></i> <p>0°C</p>
-                    </div>
-                    <div class="flex items-center justify-between text-blue-500">
-                        <i class="fa-solid fa-arrow-down pr-2"></i> <p>0°C</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="avg-info my-2 text-xs">
-                <p class="text-stone-500">Avg Temp: <span class="text-stone-600">0°C</span>, avg Humidity: <span class="text-stone-600">0%</span></p>
-                <p class="text-stone-500">UV index: <span class="text-stone-600">0</span></p>
-            </div>
-        </div>
-    </div>
-
+    <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/style.css" rel="stylesheet" />
     <script type="module">
-        import { fetchLatestWeather } from "{{ url_for('static', filename='js/fetchData.js') }}";
-        import { replaceDashBoardValues } from "{{ url_for('static', filename='js/fillDashBoardValues.js') }}";
+        import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/chat.bundle.es.js';
 
-        let date = (new Date()).toISOString(); //To this format : 2024-02-16
-        let city = "ParisFR";
-
-        async function updateTimeList(city){
-            await fetch(`/getDates?city_name=${city}`).then(response => response.json()).then(data => {
-                let dateList = data.map(date_ => date_.last_updated);
-                let select = document.getElementById('date');
-                select.innerHTML = "";
-                dateList.forEach(date_ => {
-                    let option = document.createElement('option');
-                    option.value = date_;
-                    option.text = (new Date(date_)).toLocaleString("FR");
-                    option.className = "block text-stone-600 text-xs font-bold w-1/3"
-                    select.appendChild(option);
-                });
-                date = (new Date(dateList[0])).toISOString();
-            });
-        }
-
-        document.getElementById('city').addEventListener('change', async function() {
-            city = this.value;
-            await updateTimeList(this.value);
-            await getDashBoardData(this.value, date);
+        createChat({
+            webhookUrl: 'https://my-n8n.dobial.com/webhook/b824a7e6-3774-4f26-9657-5a58493083fe/chat',
+            defaultLanguage: 'en',
+            initialMessages: [
+                'Hello professor! 👋',
+                "We've developed a chatbot that can respond to queries on our database. Feel free to ask any questions you have!",
+                "We can't guarantee that it'll have an answer to every question, but it'll do its best to help you out! 🤖",
+            ],
+            i18n: {
+                en: {
+                    title: 'NoSQL Project Chatbot',
+                    subtitle: '',
+                    footer: '',
+                    getStarted: 'New Conversation',
+                    inputPlaceholder: 'Type your question..',
+                },
+            },
         });
-
-        document.getElementById('date').addEventListener('change', function() {
-            date = (new Date(this.value)).toISOString();
-            getDashBoardData(city, date)
-        });
-
-        async function getDashBoardData(city, date){
-            let results = await fetchLatestWeather(city, date);
-            replaceDashBoardValues(results);
-        }
-
-        updateTimeList("ParisFR");
-        getDashBoardData("ParisFR", date);
-    </script>
-
-    <script type="module">
-        import { fetchSevenDayForecast } from "{{ url_for('static', filename='js/fetchData.js') }}";
-    </script>
-
-    <script type="module">
-        import { updateForcastData } from "{{ url_for('static', filename='js/forecast.js') }}"
-        // Event listener for when the selected city changes
-        document.getElementById('city').addEventListener('change', function() {
-            updateForcastData(this.value);
-        });
-
-        // Initial update
-        updateForcastData(document.getElementById('city').value);
     </script>
 </body>
+
+<script type="module">
+    import { fetchLatestWeather } from "{{ url_for('static', filename='js/fetchData.js') }}";
+    import { replaceDashBoardValues } from "{{ url_for('static', filename='js/fillDashBoardValues.js') }}";
+    import { fetchSevenDayForecast } from "{{ url_for('static', filename='js/fetchData.js') }}";
+    import { updateForcastData } from "{{ url_for('static', filename='js/forecast.js') }}"
+    import { createChart } from "{{ url_for('static', filename='js/chartGen.js') }}";
+    import { createHistogram } from "{{ url_for('static', filename='js/chartGen.js') }}";
+    import { createScatterPlot } from "{{ url_for('static', filename='js/chartGen.js') }}";
+    import { fetchDailyHistory } from "{{ url_for('static', filename='js/fetchData.js') }}";
+    import { fetchLastandNextData } from "{{ url_for('static', filename='js/fetchData.js') }}";
+
+    let date = (new Date()).toISOString();
+    let city = "ParisFR";
+    
+    const daily_uv = document.getElementById('dailyUVCanvas').getContext('2d');
+    const daily_temp = document.getElementById('dailyTempCanvas').getContext('2d');
+    const daily_humidity = document.getElementById('dailyHumidityCanvas').getContext('2d');
+
+    // Initial update
+    updateTimeList("ParisFR");
+    getDashBoardData("ParisFR", date);
+    updateForcastData(document.getElementById('city').value);
+
+    showHist("ParisFR", daily_uv)
+    showChart("ParisFR", daily_temp)
+    showScatt("ParisFR", daily_humidity)
+
+    async function updateTimeList(city){
+        await fetch(`/getDates?city_name=${city}`).then(response => response.json()).then(data => {
+            let dateList = data.map(date_ => date_.last_updated);
+            let select = document.getElementById('date');
+            select.innerHTML = "";
+            dateList.forEach(date_ => {
+                let option = document.createElement('option');
+                option.value = date_;
+                option.text = (new Date(date_)).toLocaleString("FR");
+                option.className = "block text-stone-600 text-xs font-bold w-1/3"
+                select.appendChild(option);
+            });
+            date = (new Date(dateList[0])).toISOString();
+        });
+    }
+
+    document.getElementById('city').addEventListener('change', async function() {
+        city = this.value;
+        await updateTimeList(this.value);
+        await getDashBoardData(this.value, date);
+
+        updateForcastData(this.value);
+        showHist(this.value, daily_uv)
+        showChart(this.value, daily_temp)
+        showScatt(this.value, daily_humidity)
+    });
+
+    document.getElementById('date').addEventListener('change', function() {
+        date = (new Date(this.value)).toISOString();
+        getDashBoardData(city, date)
+
+        updateForcastData(city);
+        showHist(city, daily_uv)
+        showChart(city, daily_temp)
+        showScatt(city, daily_humidity)
+    });
+
+    async function getDashBoardData(city, date){
+        let results = await fetchLatestWeather(city, date);
+        replaceDashBoardValues(results);
+    }
+
+    async function showChart(city, chart){
+        date = (new Date(date)).toISOString().split('T')[0];
+        let [ labels, results ] = await fetchLastandNextData(city, 'temp_c', 'temperatures', date);
+        labels = labels.map(time => time.split(':')[0]);
+        createChart(chart, labels, results);
+    }
+
+    async function showHist(city, chart){
+        date = (new Date(date)).toISOString().split('T')[0];
+        let [ labels, results ] = await fetchDailyHistory(city, 'uv', 'basics', date);
+        labels = labels.map(time => time.split(':')[0]);
+        createHistogram(chart, labels, results);
+    }
+
+    async function showScatt(city, chart){
+        date = (new Date(date)).toISOString().split('T')[0];
+        let [ labels, results ] = await fetchLastandNextData(city, 'humidity', 'precipitations', date);
+        createScatterPlot(chart, labels, results, 'https://cdn.iconscout.com/icon/free/png-256/free-droplet-drop-water-save-33879.png');
+    }
+</script>
+
 </html>

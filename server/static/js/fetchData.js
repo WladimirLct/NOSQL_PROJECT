@@ -1,4 +1,13 @@
 // Function to fetch weather data for the selected city
+async function fetchLastandNextData(cityId, dataName, documentName, date) {
+    const response = await fetch(`/get_last_and_next_day?city_name=${cityId}&data_name=${dataName}&document_name=${documentName}&date=${date}`);
+    const data = await response.json();
+
+    const labels = data.flat().map(item => item[1].split(' ')[1]); // Extracting date-time strings for labels but remove the day since it's daily data
+
+    return [ labels, data ];
+}
+
 async function fetchDailyHistory(cityId, dataName, documentName, date) {
     const response = await fetch(`/get_daily_weather_data?city_name=${cityId}&data_name=${dataName}&document_name=${documentName}&date=${date}`);
     const data = await response.json();
@@ -15,7 +24,6 @@ async function fetchSevenDayForecast(cityId) {
     return data;
 }
 
-export { fetchDailyHistory, fetchSevenDayForecast };
 async function fetchLatestWeather(cityId, date) {
     const response = await fetch(`/get_all_latest_weather_data?city_name=${cityId}&date=${date}`);
     const data = await response.json();
@@ -23,4 +31,7 @@ async function fetchLatestWeather(cityId, date) {
     return data;
 }
 
+export { fetchDailyHistory };
+export { fetchLastandNextData };
+export { fetchSevenDayForecast };
 export { fetchLatestWeather };

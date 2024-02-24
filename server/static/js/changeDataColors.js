@@ -20,12 +20,12 @@ export {temperatureColorChange};
 function getWeatherParameterColor(dataValue, dataName) {
     // console.log(dataValue, dataName)
     const scales = {
-        precip_mm: { green: [0, 0], lightGreen: [1, 5], yellow: [6, 15], orange: [16, 25], red: [26, Infinity] },
-        wind_kph: { green: [0, 5], lightGreen: [6, 15], yellow: [16, 25], orange: [26, 35], red: [36, Infinity] },
-        humidity: { green: [45, 55], lightGreen: [35, 44, 56, 65], yellow: [25, 34, 66, 75], orange: [15, 24, 76, 85], red: [0, 14, 86, 100] },
-        vis_km: { green: [40, Infinity], lightGreen: [30, 39], yellow: [20, 29], orange: [10, 19], red: [0, 9] },
-        pressure_mb: { green: [1010, 1020], lightGreen: [1007, 1009, 1021, 1023], yellow: [1004, 1006, 1024, 1026], orange: [1001, 1003, 1027, 1029], red: [0, 1000, 1030, Infinity] },
-        uv: { green: [0, 2], lightGreen: [3, 4], yellow: [5, 6], orange: [7, 9], red: [10, Infinity] },
+        precip_mm: { green: [0, 1], lightGreen: [1, 5], yellow: [5, 15], orange: [15, 25], red: [25, Infinity] },
+        wind_kph: { green: [0, 5], lightGreen: [5, 15], yellow: [15, 25], orange: [25, 35], red: [35, Infinity] },
+        humidity: { green: [0, 20], lightGreen: [20, 40], yellow: [40, 60], orange: [60, 80], red: [80, Infinity] },
+        vis_km: { green: [40, Infinity], lightGreen: [30, 40], yellow: [20, 30], orange: [10, 20], red: [0, 10] },
+        pressure_mb: { green: [0, 1010], lightGreen: [1010, 1020], yellow: [1020, 1030], orange: [1030, 1040], red: [1040, Infinity] },
+        uv: { green: [0, 2], lightGreen: [2, 5], yellow: [5, 7], orange: [7, 11], red: [11, Infinity] },
     };
 
     const colors = {

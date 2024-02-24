@@ -271,9 +271,6 @@ def format_latest_data(result, city_name, data_name):
     return city_name, None, None
 
 
-def format_daily_data(results, data_name):
-    return [[r['city_id'], r['last_updated'].strftime('%Y-%m-%d %H:%M:%S'), r[data_name]] for r in results]
-
 
 def create_weather_pattern_alerts_pipeline(city_id, n, temp_change_threshold):
     current_datetime = datetime.utcnow()
@@ -344,3 +341,36 @@ def get_daily_weather_data_pipeline(city_name, data_name, document_name, date):
         {"$sort": {"last_updated": 1}}
     ]
 
+def get_last_and_next_day(db, date, city_name, document_name, data_name):    
+    # Récupérer les trois dernières températures de la collection "temperatures"
+    start_datetime, end_datetime = get_day_start_end(date)
+
+    last_temps_pipeline = [
+        {"$match": {'city_id': city_name, 'last_updated': {'$lte': end_datetime, '$gte': start_datetime}}},
+        {"$sort": {"last_updated": 1}},
+        {"$project": {"_id": 0, "city_id" : 1,"last_updated": 1, data_name: 1}}
+    ]
+
+    last_temps_result = aggregate_data(db[document_name], last_temps_pipeline)
+    # get hour of the latest data
+    last_updated = last_temps_result[len(last_temps_result)-1]['last_updated']
+
+    # # Récupérer les 6 prochaines températures de la collection "forecast_temperatures" apres l'heure de la dernière température
+    next_temps_pipeline = [
+        {"$match": {'city_id': city_name, 'time': {'$gt': last_updated, '$lte': end_datetime}}},
+        {"$sort": {"time": 1}},
+        {"$project": {"_id": 0, "city_id" : 1,"time": 1, data_name: 1}}
+    ]
+
+    next_temps_result = aggregate_data(db['forecast_'+document_name], next_temps_pipeline)
+
+    data = [format_last_and_next_temperatures(last_temps_result, data_name), format_last_and_next_temperatures(next_temps_result,  data_name)]
+
+    return data
+
+def format_last_and_next_temperatures(results, data_name):
+    return [[r['city_id'], r['last_updated'].strftime('%Y-%m-%d %H:%M:%S') if 'last_updated' in r else r['time'].strftime('%Y-%m-%d %H:%M:%S'), r[data_name]] for r in results]
+
+
+def format_daily_data(results, data_name):
+    return [[r['city_id'], r['last_updated'].strftime('%Y-%m-%d %H:%M:%S'), r[data_name]] for r in results]
