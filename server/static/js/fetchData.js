@@ -9,4 +9,10 @@ async function fetchDailyHistory(cityId, dataName, documentName, date) {
     return [ labels, results ];
 }
 
-export { fetchDailyHistory };
+async function fetchSevenDayForecast(cityId) {
+    const response = await fetch(`/get_seven_day_forecast?city_name=${cityId}`);
+    const data = await response.json();
+    return data;
+}
+
+export { fetchDailyHistory, fetchSevenDayForecast };
