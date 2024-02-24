@@ -16,3 +16,11 @@ async function fetchSevenDayForecast(cityId) {
 }
 
 export { fetchDailyHistory, fetchSevenDayForecast };
+async function fetchLatestWeather(cityId, date) {
+    const response = await fetch(`/get_all_latest_weather_data?city_name=${cityId}&date=${date}`);
+    const data = await response.json();
+    
+    return data;
+}
+
+export { fetchLatestWeather };

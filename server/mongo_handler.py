@@ -49,6 +49,12 @@ def get_cities(db):
     city_name_id_list = list(db["cities"].find({}, {"_id": 1, "country": 1}, sort=[("population", pymongo.DESCENDING)]))
     return city_name_id_list
 
+
+def get_dates(db, city_name):
+    date_list = list(db["basics"].find({"city_id": city_name}, {"_id": 0, "last_updated": 1}, sort=[("last_updated", pymongo.DESCENDING)]))
+    return date_list
+
+
 # Gets air quality data for cities with poor air quality on a specific date
 def get_bad_air_quality_cities(db, date):
     collection = db["air_quality"]
@@ -84,6 +90,99 @@ def get_latest_weather_data(db, city_name, data_name, document_name):
     collection = db[document_name]
     result = collection.find_one({'city_id': city_name}, sort=[('last_updated', pymongo.DESCENDING)])
     return format_latest_data(result, city_name, data_name)
+
+# Get all the latest weather data for a specified city
+def get_weather_data(db, city_name, date):
+    end_date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
+    start_date = end_date - timedelta(hours=2)
+
+    # timezone = db["cities"].find_one({"_id": city_name}, {"timezone": 1})["timezone"]
+    # # Timezone is like -> timezone: 32400
+    # start_date = start_date + timedelta(seconds=timezone) - timedelta(hours=1)
+    # end_date = end_date + timedelta(seconds=timezone) - timedelta(hours=1)
+
+    pipeline = [
+        {
+            "$match": {
+                "city_id": city_name,  # Placeholder for the actual city_id
+                'last_updated': {"$gt": start_date, "$lte": end_date}  # Placeholder for the actual last_updated timestamp
+            }
+        },
+        {
+            "$lookup": {
+                "from": "temperatures",
+                "let": {"city_id": "$city_id", "last_updated": "$last_updated"},
+                "pipeline": [
+                    {"$match": 
+                        {"$expr": 
+                            {"$and": [
+                                {"$eq": ["$city_id", "$$city_id"]},
+                                {"$eq": ["$last_updated", "$$last_updated"]}
+                            ]}
+                        }
+                    },
+                    {"$project": {"temp_c": 1, "feelslike_c": 1, "pressure_mb": 1}}
+                ],
+                "as": "temperature_data"
+            }
+        },
+        {
+            "$lookup": {
+                "from": "precipitations",
+                "let": {"city_id": "$city_id", "last_updated": "$last_updated"},
+                "pipeline": [
+                    {"$match": 
+                        {"$expr": 
+                            {"$and": [
+                                {"$eq": ["$city_id", "$$city_id"]},
+                                {"$eq": ["$last_updated", "$$last_updated"]}
+                            ]}
+                        }
+                    },
+                    {"$project": {"humidity": 1, "precip_mm": 1}}
+                ],
+                "as": "precipitation_data"
+            }
+        },
+        {
+            "$lookup": {
+                "from": "wind",
+                "let": {"city_id": "$city_id", "last_updated": "$last_updated"},
+                "pipeline": [
+                    {"$match": 
+                        {"$expr": 
+                            {"$and": [
+                                {"$eq": ["$city_id", "$$city_id"]},
+                                {"$eq": ["$last_updated", "$$last_updated"]}
+                            ]}
+                        }
+                    },
+                    {"$project": {"wind_kph": 1}}
+                ],
+                "as": "wind_data"
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "city_id": 1,  # Placeholder for the actual city_id
+                "last_updated": 1,  # Placeholder for the actual last_updated timestamp
+                "uv": 1,
+                "condition": 1,
+                "vis_km": 1,
+                "temp_c": {"$arrayElemAt": ["$temperature_data.temp_c", 0]},
+                "feelslike_c": {"$arrayElemAt": ["$temperature_data.feelslike_c", 0]},
+                "pressure_mb": {"$arrayElemAt": ["$temperature_data.pressure_mb", 0]},
+                "humidity": {"$arrayElemAt": ["$precipitation_data.humidity", 0]},
+                "precip_mm": {"$arrayElemAt": ["$precipitation_data.precip_mm", 0]},
+                "wind_kph": {"$arrayElemAt": ["$wind_data.wind_kph", 0]}
+            }
+        }
+    ]
+
+    result = aggregate_data(db["basics"], pipeline)
+
+    return result[0]
 
 
 # Gets daily weather data for a specified city and date
@@ -236,3 +335,12 @@ def get_high_wind_speed_cities(db, date, wind_speed_threshold):
         })
 
     return data
+
+def get_daily_weather_data_pipeline(city_name, data_name, document_name, date):
+    start_of_day, end_of_day = get_full_day_range(date)
+    return [
+        {"$match": {'city_id': city_name, 'last_updated': {'$gte': start_of_day, '$lte': end_of_day}}},
+        {"$project": {"_id": 0, "city_id": 1, "last_updated": 1, data_name: 1}},
+        {"$sort": {"last_updated": 1}}
+    ]
+

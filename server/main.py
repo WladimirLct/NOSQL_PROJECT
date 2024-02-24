@@ -1,4 +1,5 @@
 import flask
+from flask import send_from_directory
 import mongo_handler
 
 app = flask.Flask(__name__)
@@ -12,6 +13,22 @@ def index():
     # Send file from ../client/index.html
     return flask.render_template('index.html', cities=mongo_handler.get_cities(db))
 
+@app.route('/getDates', methods=['GET'])
+def get_dates():
+    city_name = flask.request.args.get('city_name')
+    return flask.jsonify(mongo_handler.get_dates(db, city_name))
+
+@app.route('/dashboard.html', methods=['GET'])
+def render_dashboard():	
+    return flask.render_template('dashboard.html', cities=mongo_handler.get_cities(db))
+
+@app.route('/get_all_latest_weather_data', methods=['GET'])
+def get_weather_data():
+    date = flask.request.args.get('date')
+    city_name = flask.request.args.get('city_name')
+
+    result = mongo_handler.get_weather_data(db, city_name, date)  
+    return flask.jsonify(result)
 
 @app.route('/predict_temp_extremes_next_7_days', methods=['GET'])
 def predict_temp_extremes_next_7_days():

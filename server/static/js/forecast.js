@@ -3,7 +3,7 @@ import { fetchSevenDayForecast } from "./fetchData.js";
 async function updateForcastData(city) {
     const forecast = await fetchSevenDayForecast(city);
 
-    forecast.forEach((day,i) => {
+    forecast.forEach((day, i) => {
         // Get the div with the id forecast_(i+1)
         const div = document.getElementById(`forecast_${i+1}`);
 
@@ -35,10 +35,4 @@ async function updateForcastData(city) {
     });
 };
 
-// Event listener for when the selected city changes
-document.getElementById('city').addEventListener('change', function() {
-    updateForcastData(this.value);
-});
-
-// Initial update
-updateForcastData(document.getElementById('city').value);
+export { updateForcastData };
