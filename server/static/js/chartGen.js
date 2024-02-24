@@ -10,7 +10,7 @@ function createChart(ctx, labels, dataPoints) {
         data: {
             labels: labels,
             datasets: [{
-                label: 'Temperature Wave',
+                label: 'Temperature',
                 data: dataPoints,
                 borderColor: 'rgba(255, 99, 132, 1)',
                 borderWidth: 2,
@@ -18,32 +18,37 @@ function createChart(ctx, labels, dataPoints) {
                 tension: 0.4, // Adjust the curve tension
             }]
         },
+        plugins: [ChartDataLabels],
         options: {
+            title : {
+                display : true,
+                text : 'Temperature',
+            },
             scales: {
-                yAxes: [{
-                    gridLines: {
-                      drawBorder: false,
-                    },
-                }],
                 x: {
                     grid : {
                         display : false
                     }
                 },
                 y: {
+                    display : false,
                     grid : {
                         display : false
                     },
                     beginAtZero: false,
-                    suggestedMin: Math.min(...dataPoints) - 2, // Adjust based on your data
-                    suggestedMax: Math.max(...dataPoints) + 2 // Adjust based on your data
+                    suggestedMin: Math.min(...dataPoints) - 2,
+                    suggestedMax: Math.max(...dataPoints) + 2 
                 }
             },
             plugins: {
                 legend: {
                     display: false // Hide the legend
+                },
+                datalabels: {
+                    anchor : 'end',
+                    align : 'top',
                 }
-            }
+           }
         }
     });
 }
@@ -66,9 +71,9 @@ function createHistogram(ctx, labels, dataPoints) {
                     if (value <= 2) {
                         return 'rgba(0, 255, 0, 0.7)'; 
                     } else if (value <= 5) {
-                        return 'rgba(255, 255, 0, 0.7)';
-                    } else if (value <= 7) {
                         return 'rgba(255, 165, 0, 0.7)';
+                    } else if (value <= 7) {
+                        return 'rgba(255, 140, 0, 0.8)';
                     } else if (value === 11) {
                         return 'rgba(128, 0, 128, 0.7)'; 
                     } else {
@@ -77,6 +82,7 @@ function createHistogram(ctx, labels, dataPoints) {
                 }),
             }]
         },
+        plugins: [ChartDataLabels],
         options: {
             scales: {
                 x: {
@@ -85,6 +91,7 @@ function createHistogram(ctx, labels, dataPoints) {
                     },
                 },
                 y: {
+                    display: false,
                     grid: {
                         display: false,
                     },
@@ -92,10 +99,13 @@ function createHistogram(ctx, labels, dataPoints) {
             },
             plugins: {
                 legend: {
-                    display: false // Hide the legend
+                    display: false 
                 },
+                datalabels: {
+                    color : 'white'
+                }
             }
-        }
+        },
     });
 }
 
@@ -123,6 +133,7 @@ function createScatterPlot(ctx, labels, dataPoints, imageSrc) {
                 pointStyle: img,
             }]
         },
+        plugins: [ChartDataLabels],
         options: {
             clip: false,
             scales: {
@@ -130,26 +141,28 @@ function createScatterPlot(ctx, labels, dataPoints, imageSrc) {
                     grid : {
                         display : false
                     },
-                    type: 'linear',
-                    position: 'bottom',
-                    ticks: {
-                        stepSize: 1,
-                        callback: function (value, index) {
-                            return labels[index];
-                        }
-                    }
                 },
                 y: {
+                    display : false,
                     grid : {
                         display : false
                     },
                     min: 0,  // Set minimum value for the y-axis
-                    max: 100,  // Set maximum value for the y-axis
+                    max: 120,  // Set maximum value for the y-axis
                 }
             },
             plugins: {
                 legend: {
                     display: false
+                },
+                datalabels: {
+                    anchor : 'end',
+                    align : 'top',
+                    offset : 10,
+                    clip : false,
+                    formatter: function (value) {
+                        return value.y; 
+                    }
                 }
             }
         }

@@ -6,6 +6,9 @@
     <title>NoSQL Project</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.0/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+
 </head>
 
 <body class="bg-gray-100 h-screen">
@@ -29,27 +32,25 @@
         </div>
     </div>
 
-    <div class="container mx-auto flex items-center justify-center bg-gray-100 h-full">
-        <div class="w-1/2 bg-gray-200 p-4">
+    <div class="flex justify-around w-full">
 
+            <div class = "bg-white p-4">Temperatures °C
             <div class="flex justify-center">
                 <canvas id="dailyTempChart" class="bg-white p-4"></canvas>
             </div>
-        </div>
+            </div>
 
-        <div class="w-1/2 bg-gray-200 p-4">
-
+            <div class = "bg-white p-4">UV
             <div class="flex justify-center">
                 <canvas id="dailyUV" class="bg-white p-4"></canvas>
             </div>
-        </div>
+            </div>
 
-        <div class="w-1/2 bg-gray-200 p-4">
-
+            <div class = "bg-white p-4">Humidity
             <div class="flex justify-center">
                 <canvas id="dailyHumidityChart" class="bg-white p-4"></canvas>
             </div>
-        </div>
+            </div>
     </div>
 
 </body>
@@ -87,12 +88,14 @@
         async function showChart(city, chart){
             const date = (new Date()).toISOString().split('T')[0];; //To this format : 2024-02-16
             let [ labels, results ] = await fetchLastandNextData(city, 'temp_c', 'temperatures', date);
+            labels = labels.map(time => time.split(':')[0]);
             createChart(daily_temp_chart, labels, results);
         }
 
         async function showHist(city, chart){
             const date = (new Date()).toISOString().split('T')[0];; //To this format : 2024-02-16
             let [ labels, results ] = await fetchDailyHistory(city, 'uv', 'basics', date);
+            labels = labels.map(time => time.split(':')[0]);
             createHistogram(daily_uv, labels, results);
         }
 
@@ -106,6 +109,7 @@
 
         // Créer un tableau d'objets avec des propriétés x et y
         const dataPoints = labels.map((label, index) => ({ x: index, y: results[index] }));
+        labels = labels.map(time => time.split(':')[0]);
 
         createScatterPlot(daily_humidity, labels, dataPoints, 'https://upload.wikimedia.org/wikipedia/commons/b/b7/Goutte_d%27eau.png');
     }
