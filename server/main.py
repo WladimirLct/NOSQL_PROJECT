@@ -30,7 +30,8 @@ def get_all_latest_weather_data_all():
         ("pressure_mb", "temperatures"),
         ("precip_mm", "precipitations"),
         ("condition", "basics"),
-        ("last_updated", "basics")
+        ("last_updated", "basics"),
+        ("vis_km", "basics")
     ]
 
     weather_data_results = {}

@@ -48,47 +48,46 @@
                 <div class="flex flex-row justify-between mb-4 w-full">
                     <span class="block text-black-600 text-sm mb-1 mr-5">Precipitations</span>
                     <div class = "flex flex-row justify-between w-5/12">
-                        <i class="fa-solid fa-droplet" style="color: #74C0FC;"></i> 
+                        <i class="fa-solid fa-droplet" id = "iprecip" style="color: #74C0FC;"></i> 
                         <span class="block text-black-600 text-sm mb-1" id = "precip_mm">5%</span>
                     </div>
                 </div>
                 <div class="flex flex-row justify-between mb-4 w-full">
                     <span class="block text-black-600 text-sm mb-1 mr-5">Wind Speed</span>
                     <div class = "flex flex-row justify-between w-5/12">
-                        <i class="fa-solid fa-circle text-xs" style="color: #4cb804;"></i> 
+                        <i class="fa-solid fa-circle text-xs" id = "iws" style="color: #4cb804;"></i> 
                         <span class="block text-black-600 text-sm mb-1" id = "wind_kph">24.1 km/h</span>
                     </div>
                 </div>
                 <div class="flex flex-row justify-between mb-4 w-full">
                     <span class="block text-black-600 text-sm mb-1 mr-5">Humidity</span>
                     <div class = "flex flex-row justify-between w-5/12">
-                        <i class="fa-solid fa-circle text-xs" style="color: #ffd404;"></i>
+                        <i class="fa-solid fa-circle text-xs" id = "ih" style="color: #ff9204;"></i>
                         <span class="block text-black-600 text-sm mb-1" id = "humidity">63%</span>
                     </div>
                 </div>
                 <div class="flex flex-row justify-between mb-4 w-full">
-                    <span class="block text-black-600 text-sm mb-1 mr-5">Air Quality</span>
+                    <span class="block text-black-600 text-sm mb-1 mr-5">Visibility</span>
                     <div class = "flex flex-row justify-between w-5/12">
-                        <i class="fa-solid fa-circle text-xs" style="color: #accc0c;"></i> 
-                        <span class="block text-black-600 text-sm mb-1">23 AQI</span>
+                        <i class="fa-solid fa-circle text-xs" id = "ivk" style="color: #accc0c;"></i> 
+                        <span class="block text-black-600 text-sm mb-1" id = "vis_km">10 km</span>
                     </div>
                 </div>
                 <div class="flex flex-row justify-between mb-4 w-full">
                     <span class="block text-black-600 text-sm mb-1 mr-5">Pressure</span>
                     <div class = "flex flex-row justify-between w-5/12">
-                        <i class="fa-solid fa-circle text-xs" style="color: #d11515;"></i>
+                        <i class="fa-solid fa-circle text-xs" id = "ipm" style="color: #d11515;"></i>
                         <span class="block text-black-600 text-sm mb-1" id = "pressure_mb">1016 mb</span>
                     </div>
                 </div>
                 <div class="flex flex-row justify-between mb-4 w-full">
                     <span class="block text-black-600 text-sm mb-1 mr-5">UV Index</span>
                     <div class = "flex flex-row justify-between w-5/12">
-                        <i class="fa-solid fa-circle text-xs" style="color: #4cb804;"></i> 
+                        <i class="fa-solid fa-circle text-xs" id = "iuv" style="color: #4cb804;"></i> 
                         <span class="block text-black-600 text-sm mb-1" id = "uv">-</span>
                     </div>
                 </div>
             </div>
-            
         </div>
     </div>
     <script type="module">
@@ -101,15 +100,7 @@
 
         async function getDashBoardData(city){
             let results = await fetchLatestWeather(city);
-            console.log(results);
-            // id = "feelslike_c"
-            // id = "temp_c"
-            // id = "wind_kph"
-            // id = "humidity"
-            // id = "pressure_mb"
-            // id = "uv"
-            // id = "precip_mm"
-            // id = "condition"
+            // console.log(results);
             replaceDashBoardValues(results);
         }
         

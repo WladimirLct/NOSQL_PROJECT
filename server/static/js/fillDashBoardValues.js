@@ -1,11 +1,5 @@
-// id = "feelslike_c"
-            // id = "temp_c"
-            // id = "wind_kph"
-            // id = "humidity"
-            // id = "pressure_mb"
-            // id = "uv"
-            // id = "precip_mm"
-            // id = "condition"
+import { temperatureColorChange, changeIconColor } from './changeDataColors.js';
+
 function replaceTimeDate(data) {
     const dateTime = new Date(data[1]);
 
@@ -23,28 +17,6 @@ function replaceTimeDate(data) {
     monthElement.textContent = "Last updated, " + month + " " + day;
 }
 
-function colorChange(data) {
-    if (data["temp_c"][2] > 30) {
-        document.getElementById("temp_c").style.color = "red";
-        document.getElementById("temp_color").style.color = "red";
-    } else if (data["temp_c"][2] > 20) {
-        document.getElementById("temp_c").style.color = "#ffa404";
-        document.getElementById("temp_color").style.color = "#ffa404";
-    } else if (data["temp_c"][2] >= 10) {
-        document.getElementById("temp_c").style.color = "#ffd404";
-        document.getElementById("temp_color").style.color = "#ffd404";
-    } else if (data["temp_c"][2] > 0) {
-        document.getElementById("temp_c").style.color = "#107ce8";
-        document.getElementById("temp_color").style.color = "#107ce8";
-    } else if (data["temp_c"][2] <= 0) {
-        document.getElementById("temp_c").style.color = "#74c4ff";
-        document.getElementById("temp_color").style.color = "#74c4ff";
-    } else {
-        document.getElementById("temp_c").style.color = "black";
-        document.getElementById("temp_color").style.color = "black";
-    }
-}
-
 function replaceDashBoardValues(data) {
     // Replace the values in the dashboard with the new data
     document.getElementById("feelslike_c").textContent = data["feelslike_c"][2];
@@ -56,8 +28,10 @@ function replaceDashBoardValues(data) {
     document.getElementById("precip_mm").textContent = data["precip_mm"][2]+ " mm";
     document.getElementById("condition").textContent = data["condition"][2]['text'];
     document.getElementById("conditionImg").src = data["condition"][2]['icon'];
+    document.getElementById("vis_km").textContent = data["vis_km"][2] + " km";
     replaceTimeDate(data["last_updated"]);
-    colorChange(data);
+    temperatureColorChange(data);
+    changeIconColor(data);
 }
 
 export { replaceDashBoardValues };
