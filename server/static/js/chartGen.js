@@ -2,6 +2,7 @@ function createChart(ctx, labels, dataPoints) {
 
     dataPoints.forEach((type, index) => {
         type.forEach((value) => {
+            value[2] = parseInt(value[2]);
             value.color = index == 0 ? 'rgba(255, 99, 132, 1)' : 'rgba(54, 162, 235, 1)';
         });
     });
