@@ -14,8 +14,7 @@ function createChart(ctx, labels, dataPoints) {
                 data: dataPoints,
                 borderColor: 'rgba(255, 99, 132, 1)',
                 borderWidth: 2,
-                fill: false, // Fill the area under the line
-                tension: 0.4, // Adjust the curve tension
+                tension: 0.5, // Adjust the curve tension
             }]
         },
         plugins: [ChartDataLabels],
@@ -28,7 +27,8 @@ function createChart(ctx, labels, dataPoints) {
                 x: {
                     grid : {
                         display : false
-                    }
+                    },
+                    max: 23,  // Set maximum value for the x-axis
                 },
                 y: {
                     display : false,
@@ -69,7 +69,7 @@ function createHistogram(ctx, labels, dataPoints) {
                 data: dataPoints,
                 backgroundColor: dataPoints.map(value => {
                     if (value <= 2) {
-                        return 'rgba(0, 255, 0, 0.7)'; 
+                        return 'rgba(0, 150, 0, 0.7)'; 
                     } else if (value <= 5) {
                         return 'rgba(255, 165, 0, 0.7)';
                     } else if (value <= 7) {
@@ -89,6 +89,7 @@ function createHistogram(ctx, labels, dataPoints) {
                     grid: {
                         display: false
                     },
+                    max: 23,  // Set maximum value for the x-axis
                 },
                 y: {
                     display: false,
@@ -109,9 +110,6 @@ function createHistogram(ctx, labels, dataPoints) {
     });
 }
 
-
-
-
 function createScatterPlot(ctx, labels, dataPoints, imageSrc) {
     // First destroy the existing chart, if any
     if (window["scatterPlotChart" + ctx.canvas.id]) {
@@ -119,8 +117,8 @@ function createScatterPlot(ctx, labels, dataPoints, imageSrc) {
     }
     const img = new Image();
     img.src = imageSrc;
-    img.width = 20;
-    img.height = 23;
+    img.width = 15;
+    img.height = 18;
 
     // Create a scatter plot with custom image points
     window["scatterPlotChart" + ctx.canvas.id] = new Chart(ctx, {
@@ -141,6 +139,7 @@ function createScatterPlot(ctx, labels, dataPoints, imageSrc) {
                     grid : {
                         display : false
                     },
+                    max: 23,  // Set maximum value for the x-axis
                 },
                 y: {
                     display : false,
@@ -169,16 +168,4 @@ function createScatterPlot(ctx, labels, dataPoints, imageSrc) {
     });
 }
 
-
-
-
-export { createScatterPlot };
-
-
-
-export { createHistogram };
-
-
-
-
-export { createChart };
+export { createScatterPlot, createHistogram, createChart };

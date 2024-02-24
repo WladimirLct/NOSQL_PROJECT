@@ -229,11 +229,13 @@ def get_high_wind_speed_cities(db, date, wind_speed_threshold):
     return data
 
 
-def get_last_and_next_temperatures(db, city_name,document_name,data_name):    
+def get_last_and_next_day(db, date, city_name, document_name, data_name):    
     # Récupérer les trois dernières températures de la collection "temperatures"
+    start_datetime, end_datetime = get_day_start_end(date)
+
     last_temps_pipeline = [
-        {"$match": {'city_id': city_name}},
-        {"$sort": {"time": -1}},
+        {"$match": {'city_id': city_name, 'last_updated': {'$lte': end_datetime, '$gte': start_datetime}}},
+        {"$sort": {"last_updated": 1}},
         {"$project": {"_id": 0, "city_id" : 1,"last_updated": 1, data_name: 1}}
     ]
 
@@ -245,15 +247,16 @@ def get_last_and_next_temperatures(db, city_name,document_name,data_name):
 
     # # Récupérer les 6 prochaines températures de la collection "forecast_temperatures" apres l'heure de la dernière température
     next_temps_pipeline = [
-        {"$match": {'city_id': city_name, 'time': {'$gt': last_updated}}},
+        {"$match": {'city_id': city_name, 'time': {'$gt': last_updated, '$lte': end_datetime}}},
         {"$sort": {"time": 1}},
-        {"$limit": 6},
         {"$project": {"_id": 0, "city_id" : 1,"time": 1, data_name: 1}}
     ]
 
     next_temps_result = aggregate_data(db['forecast_'+document_name], next_temps_pipeline)
 
-    data = last_temps_result[len(last_temps_result)-3:] + next_temps_result[1::2]
+    print(last_temps_result, next_temps_result)
+
+    data = last_temps_result + next_temps_result
 
     return format_last_and_next_temperatures(data, data_name)
 
