@@ -32,6 +32,7 @@
     <div class="flex h-screen flex items-center justify-center">
         <div class="shrink-0 container mx-auto p-4 pt-0 w-96 min_height">
             <div class="flex flex-col bg-stone-50 items-center justify-center min_height">
+
                 <div class="flex flex-row mb-1">
                     <p class="block text-black-600 text-lg font-bold mb-1" >
                         <span id="day">Tuesday,</span>
@@ -100,6 +101,7 @@
                             <span class="block text-black-600 text-sm mb-1" id = "uv">-</span>
                         </div>
                     </div>
+                    <div id="airQualityMessage" class="text-red-500 text-sm"></div>
                 </div>
             </div>
         </div>
@@ -269,6 +271,7 @@
     import { createScatterPlot } from "{{ url_for('static', filename='js/chartGen.js') }}";
     import { fetchDailyHistory } from "{{ url_for('static', filename='js/fetchData.js') }}";
     import { fetchLastandNextData } from "{{ url_for('static', filename='js/fetchData.js') }}";
+    import { badAirQuality } from "{{ url_for('static', filename='js/fetchData.js') }}";
 
     let date = (new Date()).toISOString();
     let city = "ParisFR";
@@ -311,9 +314,10 @@
         showHist(this.value, daily_uv)
         showChart(this.value, daily_temp)
         showScatt(this.value, daily_humidity)
+        displayAirQualityMessage(city, date);
     });
 
-    document.getElementById('date').addEventListener('change', function() {
+    document.getElementById('date').addEventListener('change', async function() {
         date = (new Date(this.value)).toISOString();
         getDashBoardData(city, date)
 
@@ -321,6 +325,7 @@
         showHist(city, daily_uv)
         showChart(city, daily_temp)
         showScatt(city, daily_humidity)
+        displayAirQualityMessage(city, date);
     });
 
     async function getDashBoardData(city, date){
@@ -346,6 +351,16 @@
         date = (new Date(date)).toISOString().split('T')[0];
         let [ labels, results ] = await fetchLastandNextData(city, 'humidity', 'precipitations', date);
         createScatterPlot(chart, labels, results, 'https://cdn.iconscout.com/icon/free/png-256/free-droplet-drop-water-save-33879.png');
+    }
+
+    async function displayAirQualityMessage(city, date) {
+        const airQualityMessage = document.getElementById('airQualityMessage');
+        airQualityMessage.innerHTML = "";
+        const badAirQualityCities = await badAirQuality(city, date);
+        if (badAirQualityCities.length > 0) {
+            const message = `Warning ! The air quality is poor in this city.`;
+            airQualityMessage.innerHTML = message;
+        }
     }
 </script>
 

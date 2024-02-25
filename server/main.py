@@ -84,7 +84,8 @@ def get_temperature_extremes():
 @app.route('/get_bad_air_quality_cities', methods=['GET'])
 def get_bad_air_quality_cities():
     date = flask.request.args.get('date')
-    result = mongo_handler.get_bad_air_quality_cities(db, date)
+    city_name = flask.request.args.get('city_name')
+    result = mongo_handler.get_bad_air_quality_cities(db, date, city_name)
     return flask.jsonify(result)
 
 

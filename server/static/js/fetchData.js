@@ -31,6 +31,14 @@ async function fetchLatestWeather(cityId, date) {
     return data;
 }
 
+async function badAirQuality(cityId, date) {
+    const response = await fetch(`/get_bad_air_quality_cities?city_name=${cityId}&date=${date}`);
+    const data = await response.json();
+    
+    return data;
+}
+
+export { badAirQuality };
 export { fetchDailyHistory };
 export { fetchLastandNextData };
 export { fetchSevenDayForecast };

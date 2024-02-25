@@ -18,13 +18,15 @@ def aggregate_data(collection, pipeline):
 
 
 # Helper functions to create pipelines for MongoDB aggregation
-def create_air_quality_pipeline(start_datetime, end_datetime):
+def create_air_quality_pipeline(city_id, start_datetime, end_datetime):
     return [
         {"$match": {
+            'city_id': city_id,
             'last_updated': {'$gte': start_datetime, '$lte': end_datetime},
             "$or": [{"co": {"$gt": 4000}}, {"no2": {"$gt": 25}}, {"o3": {"$gt": 100}}, {"so2": {"$gt": 40}}]}},
         {"$project": {"_id": 0, "city_id": 1, "last_updated": 1}}
     ]
+
 
 
 def create_temperature_pipeline(city_name, date_field, start_datetime, end_datetime):
@@ -56,12 +58,14 @@ def get_dates(db, city_name):
 
 
 # Gets air quality data for cities with poor air quality on a specific date
-def get_bad_air_quality_cities(db, date):
+def get_bad_air_quality_cities(db, date, city_id):
     collection = db["air_quality"]
     start_datetime, end_datetime = get_day_start_end(date)
 
-    pipeline = create_air_quality_pipeline(start_datetime, end_datetime)
+    pipeline = create_air_quality_pipeline(city_id, start_datetime, end_datetime)
     return format_city_dates(aggregate_data(collection, pipeline))
+
+
 
 
 # Gets the highest and lowest temperatures for a specified city and date
@@ -374,3 +378,4 @@ def format_last_and_next_temperatures(results, data_name):
 
 def format_daily_data(results, data_name):
     return [[r['city_id'], r['last_updated'].strftime('%Y-%m-%d %H:%M:%S'), r[data_name]] for r in results]
+
