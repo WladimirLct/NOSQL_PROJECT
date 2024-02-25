@@ -288,6 +288,7 @@
     showHist("ParisFR", daily_uv)
     showChart("ParisFR", daily_temp)
     showScatt("ParisFR", daily_humidity)
+    displayAirQualityMessage('ParisFR', date);
 
     async function updateTimeList(city){
         await fetch(`/getDates?city_name=${city}`).then(response => response.json()).then(data => {
