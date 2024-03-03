@@ -30,6 +30,12 @@ def get_weather_data():
     result = mongo_handler.get_weather_data(db, city_name, date)  
     return flask.jsonify(result)
 
+@app.route('/weather_change_alert', methods=['GET'])
+def weather_change_alert():
+    city_name = flask.request.args.get('city_name')
+    result = mongo_handler.weather_pattern_alerts(db, city_name, 10 ,5)
+    return flask.jsonify(result)
+
 @app.route('/predict_temp_extremes_next_7_days', methods=['GET'])
 def predict_temp_extremes_next_7_days():
     city_name = flask.request.args.get('city_name')

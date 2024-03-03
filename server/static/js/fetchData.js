@@ -38,8 +38,17 @@ async function badAirQuality(cityId, date) {
     return data;
 }
 
+async function fetchWeatherChangeAlert(cityId){
+    const response = await fetch(`/weather_change_alert?city_name=${cityId}`);
+    const data = await response.json();
+    
+    return data;
+}
+
+
 export { badAirQuality };
 export { fetchDailyHistory };
 export { fetchLastandNextData };
 export { fetchSevenDayForecast };
 export { fetchLatestWeather };
+export { fetchWeatherChangeAlert };

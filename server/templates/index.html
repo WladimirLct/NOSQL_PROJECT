@@ -272,6 +272,7 @@
     import { fetchDailyHistory } from "{{ url_for('static', filename='js/fetchData.js') }}";
     import { fetchLastandNextData } from "{{ url_for('static', filename='js/fetchData.js') }}";
     import { badAirQuality } from "{{ url_for('static', filename='js/fetchData.js') }}";
+    import { fetchWeatherChangeAlert } from "{{ url_for('static', filename='js/fetchData.js') }}";
 
     let date = (new Date()).toISOString();
     let city = "ParisFR";
@@ -289,6 +290,7 @@
     showChart("ParisFR", daily_temp)
     showScatt("ParisFR", daily_humidity)
     displayAirQualityMessage('ParisFR', date);
+    weatherChangeAlert('ParisFR');
 
     async function updateTimeList(city){
         await fetch(`/getDates?city_name=${city}`).then(response => response.json()).then(data => {
@@ -316,6 +318,7 @@
         showChart(this.value, daily_temp)
         showScatt(this.value, daily_humidity)
         displayAirQualityMessage(city, date);
+        weatherChangeAlert(city);
     });
 
     document.getElementById('date').addEventListener('change', async function() {
@@ -328,6 +331,23 @@
         showScatt(city, daily_humidity)
         displayAirQualityMessage(city, date);
     });
+
+    async function weatherChangeAlert(city){
+        let results = await fetchWeatherChangeAlert(city);
+        // console.log(results);
+        if (results) {
+            let latestDate = new Date(results[0]["earliest_date"]);
+            let earliestDate = new Date(results[0]["latest_date"]);
+            let differenceInMilliseconds = latestDate - earliestDate;
+            let differenceInHours = differenceInMilliseconds / (1000 * 60 * 60); // Convert milliseconds to hours
+
+            let tempDifference = results[0]["earliest_temp"] - results[0]["latest_temp"];
+
+            const message = `Strong temperature change detected in approximately ${differenceInHours} hours. Temperature change: ${tempDifference.toFixed(2)}°C`;
+
+            alert(message);
+        } 
+    }
 
     async function getDashBoardData(city, date){
         let results = await fetchLatestWeather(city, date);
