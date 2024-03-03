@@ -314,6 +314,7 @@ def weather_pattern_alerts(db, city_id, n=24, temp_change_threshold=10):
         print(f"Latest temperature: {result[0]['earliest_temp']}°C on {result[0]['earliest_date']}")
     else:
         print(f"No significant temperature change in {city_id} for the next {n} hours.")
+        result = None
     return result
 
 
