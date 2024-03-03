@@ -276,12 +276,13 @@ def format_latest_data(result, city_name, data_name):
 
 
 
-def create_weather_pattern_alerts_pipeline(city_id, n, temp_change_threshold):
-    current_datetime = datetime.utcnow()
-    print(f"Current datetime: {current_datetime}")
+def create_weather_pattern_alerts_pipeline(city_id, current_datetime, hourToCheck, temp_change_threshold):
+    # current_datetime = datetime.utcnow()
+    # print(f"Current datetime: {current_datetime}")
     return [
         {'$match': {'city_id': city_id, 'time': {'$gte': current_datetime}}},
-        {'$limit': n},
+        {'$limit': hourToCheck},
+        {'$sort': {'time': 1}},
         {'$group': {
             '_id': '$city_id',
             'latest_temp': {'$first': '$temp_c'},
@@ -300,8 +301,13 @@ def create_weather_pattern_alerts_pipeline(city_id, n, temp_change_threshold):
     ]
 
 def weather_pattern_alerts(db, city_id, n=24, temp_change_threshold=10):
-    pipeline = create_weather_pattern_alerts_pipeline(city_id, n, temp_change_threshold)
-    result = aggregate_data(db['forecast_temperatures'], pipeline)
+    current_datetime = get_dates(db, city_id)[0]['last_updated']
+    result = None
+    current_hour = 2 #2 will be midnight + 1, 3 will be midnight + 2, etc
+    while not result and current_hour <= n:
+        pipeline = create_weather_pattern_alerts_pipeline(city_id, current_datetime, current_hour, temp_change_threshold)
+        result = aggregate_data(db['forecast_temperatures'], pipeline)
+        current_hour += 1
     if result:
         print(f"Temperature change in {city_id} exceeds {temp_change_threshold}°C for the next {n} hours.")
         print(f"Earliest temperature: {result[0]['latest_temp']}°C on {result[0]['latest_date']}")

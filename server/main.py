@@ -11,6 +11,10 @@ db = mongo_handler.connect_to_mongo()
 @app.route('/')
 def index():
     # Send file from ../client/index.html
+    test = mongo_handler.weather_pattern_alerts(db, "TokyoJP", 10 ,5)
+    # print(mongo_handler.get_dates(db, "TokyoJP")[0]['last_updated'])
+    # print(mongo_handler.get_dates(db, "TokyoJP")[-1]['last_updated'])	
+	
     return flask.render_template('index.html', cities=mongo_handler.get_cities(db))
 
 @app.route('/getDates', methods=['GET'])
