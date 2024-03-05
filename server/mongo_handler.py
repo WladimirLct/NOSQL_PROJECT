@@ -10,11 +10,9 @@ def connect_to_mongo():
     return client["nosql_project"]
 
 
-
 # Filters and aggregates data based on given criteria in the MongoDB collection
 def aggregate_data(collection, pipeline):
     return list(collection.aggregate(pipeline))
-
 
 
 # Helper functions to create pipelines for MongoDB aggregation
@@ -26,7 +24,6 @@ def create_air_quality_pipeline(city_id, start_datetime, end_datetime):
             "$or": [{"co": {"$gt": 4000}}, {"no2": {"$gt": 25}}, {"o3": {"$gt": 100}}, {"so2": {"$gt": 40}}]}},
         {"$project": {"_id": 0, "city_id": 1, "last_updated": 1}}
     ]
-
 
 
 def create_temperature_pipeline(city_name, date_field, start_datetime, end_datetime):
@@ -66,44 +63,10 @@ def get_bad_air_quality_cities(db, date, city_id):
     return format_city_dates(aggregate_data(collection, pipeline))
 
 
-
-
-# Gets the highest and lowest temperatures for a specified city and date
-def get_temperature_extremes(db, city_name, date, document_name="temperatures"):
-    collection = db[document_name]
-    date_field = "time" if document_name == "forecast_temperatures" else "last_updated"
-    start_datetime, end_datetime = get_day_start_end(date)
-
-    pipeline = create_temperature_pipeline(city_name, date_field, start_datetime, end_datetime)
-    result = aggregate_data(collection, pipeline)
-    return format_temperature_data(result, city_name, date)
-
-
-# Gets the wind strength for a specified city and date
-def get_wind_strength(db, city_name, date):
-    collection = db["wind"]
-    start_datetime, end_datetime = get_day_start_end(date)
-
-    pipeline = create_wind_pipeline(city_name, start_datetime, end_datetime)
-    result = aggregate_data(collection, pipeline)
-    return format_wind_data(result, city_name)
-
-
-# Gets the latest weather data for a specified city
-def get_latest_weather_data(db, city_name, data_name, document_name):
-    collection = db[document_name]
-    result = collection.find_one({'city_id': city_name}, sort=[('last_updated', pymongo.DESCENDING)])
-    return format_latest_data(result, city_name, data_name)
-
 # Get all the latest weather data for a specified city
 def get_weather_data(db, city_name, date):
     end_date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ')
     start_date = end_date - timedelta(hours=2)
-
-    # timezone = db["cities"].find_one({"_id": city_name}, {"timezone": 1})["timezone"]
-    # # Timezone is like -> timezone: 32400
-    # start_date = start_date + timedelta(seconds=timezone) - timedelta(hours=1)
-    # end_date = end_date + timedelta(seconds=timezone) - timedelta(hours=1)
 
     pipeline = [
         {
@@ -206,18 +169,6 @@ def get_seven_day_forecast(db, city_name):
     return [r for r in results]
 
 
-# Predicts temperature extremes for the next 7 days
-def predict_temp_extremes_next_7_days(db, city_name, start_date):
-    date = datetime.strptime(start_date, '%Y-%m-%d')
-    predictions = []
-
-    for _ in range(7):
-        next_date = date.strftime('%Y-%m-%d')
-        predictions.append(get_temperature_extremes(db, city_name, next_date, "forecast_temperatures"))
-        date += timedelta(days=1)
-    return predictions
-
-
 # Helper functions for data formatting and calculations
 def get_day_start_end(date_str):
     target_date = datetime.strptime(date_str, '%Y-%m-%d').date()
@@ -238,6 +189,7 @@ def format_temperature_data(data, city_name, date):
         return data[0]["city_id"], data[0]["max_temp"], data[0]["min_temp"]
     else:
         return f"No temperature data found for {city_name} on {date}."
+
 
 def format_wind_data(data, city_name):
     beaufort_scale = define_beafort_scale()
@@ -275,7 +227,6 @@ def format_latest_data(result, city_name, data_name):
     return city_name, None, None
 
 
-
 def create_weather_pattern_alerts_pipeline(city_id, current_datetime, hourToCheck, temp_change_threshold):
     # current_datetime = datetime.utcnow()
     # print(f"Current datetime: {current_datetime}")
@@ -299,6 +250,7 @@ def create_weather_pattern_alerts_pipeline(city_id, current_datetime, hourToChec
         }},
         {'$match': {'temp_change': {'$gte': temp_change_threshold}}}
     ]
+
 
 def weather_pattern_alerts(db, city_id, n=24, temp_change_threshold=10):
     current_datetime = get_dates(db, city_id)[0]['last_updated']
@@ -327,6 +279,7 @@ def create_wind_speed_pipeline(start_datetime, end_datetime, wind_speed_threshol
         {"$project": {"_id": 0, "city_id": 1, "last_updated": 1, "wind_kph": 1, "wind_mph": 1, "wind_degree": 1, "wind_dir": 1, "gust_kph": 1, "gust_mph": 1}}
     ]
 
+
 def get_high_wind_speed_cities(db, date, wind_speed_threshold):
     collection = db["wind"]
     start_datetime, end_datetime = get_day_start_end(date)
@@ -344,6 +297,7 @@ def get_high_wind_speed_cities(db, date, wind_speed_threshold):
 
     return data
 
+
 def get_daily_weather_data_pipeline(city_name, data_name, document_name, date):
     start_of_day, end_of_day = get_full_day_range(date)
     return [
@@ -351,6 +305,7 @@ def get_daily_weather_data_pipeline(city_name, data_name, document_name, date):
         {"$project": {"_id": 0, "city_id": 1, "last_updated": 1, data_name: 1}},
         {"$sort": {"last_updated": 1}}
     ]
+
 
 def get_last_and_next_day(db, date, city_name, document_name, data_name):    
     # Récupérer les trois dernières températures de la collection "temperatures"
@@ -378,6 +333,7 @@ def get_last_and_next_day(db, date, city_name, document_name, data_name):
     data = [format_last_and_next_temperatures(last_temps_result, data_name), format_last_and_next_temperatures(next_temps_result,  data_name)]
 
     return data
+
 
 def format_last_and_next_temperatures(results, data_name):
     return [[r['city_id'], r['last_updated'].strftime('%Y-%m-%d %H:%M:%S') if 'last_updated' in r else r['time'].strftime('%Y-%m-%d %H:%M:%S'), r[data_name]] for r in results]
