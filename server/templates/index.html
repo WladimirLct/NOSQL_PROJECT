@@ -101,7 +101,16 @@
                             <span class="block text-black-600 text-sm mb-1" id = "uv">-</span>
                         </div>
                     </div>
-                    <div id="airQualityMessage" class="text-red-500 text-sm"></div>
+                    <!-- <div id="airQualityMessage" class="text-red-500 text-sm"></div> -->
+                    <div id="airQualityWarning" class="flex items-center p-2 text-sm text-yellow-500 rounded-lg invisible" role="alert">
+                        <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                        </svg>
+                        <span class="sr-only">Info</span>
+                        <div>
+                          <span class="font-medium">Warning!</span> Air quality is poor in this city.
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -345,7 +354,21 @@
 
             const message = `Strong temperature change detected in approximately ${differenceInHours} hours. Temperature change: ${tempDifference.toFixed(2)}°C`;
 
-            alert(message);
+            const alertComponent = `
+                <div class="fixed top-12 right-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3/4 flex items-center justify-center">
+                    <div class="bg-red-500 border border-red-700 text-center py-3 px-4 rounded-md w-5/6 mx-auto flex items-center justify-content-between">
+                        <div class="font-semibold text-white">Alert !</div>
+                        <div class="text-white ml-4">${message}</div>
+                    </div>
+                </div>`;
+
+            const alertContainer = document.createElement('div');
+            alertContainer.innerHTML = alertComponent;
+            document.body.appendChild(alertContainer);
+
+            setTimeout(() => {
+            document.body.removeChild(alertContainer);
+            }, 7000);
         } 
     }
 
@@ -375,13 +398,15 @@
     }
 
     async function displayAirQualityMessage(city, date) {
-        const airQualityMessage = document.getElementById('airQualityMessage');
-        airQualityMessage.innerHTML = "";
+        const airQualityWarning = document.getElementById('airQualityWarning');
         const badAirQualityCities = await badAirQuality(city, date);
+        airQualityWarning.classList.add("invisible");
+
         if (badAirQualityCities.length > 0) {
-            const message = `Warning ! The air quality is poor in this city.`;
-            airQualityMessage.innerHTML = message;
+            const message = `The air quality is poor in this city.`;
+            airQualityWarning.classList.remove("invisible");
         }
+        
     }
 </script>
 
