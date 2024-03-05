@@ -1,15 +1,24 @@
 function createChart(ctx, labels, dataPoints) {
-
+    labels = labels.map(item => parseInt(item.split(':')[0])); // Extracting date-time strings for labels but remove the day since it's daily data
+    
+    let count = 0; let first_forecast = -1;
     dataPoints.forEach((type, index) => {
-        type.forEach((value) => {
+        type.forEach((value, idx) => {
             value[2] = parseInt(value[2]);
             value.color = index == 0 ? 'rgba(255, 99, 132, 1)' : 'rgba(54, 162, 235, 1)';
+            labels[count] = index == 0 ? labels[count] + 1 : labels[count];
+            index == 1 && idx == 0 ? first_forecast = count : null;
+            count++;
         });
     });
 
-    labels = labels.map(item => parseInt(item.split(':')[0])); // Extracting date-time strings for labels but remove the day since it's daily data
-
     dataPoints = dataPoints.flat();
+    // Remove the first forecast from the data points
+    if (first_forecast !== -1) {
+        dataPoints.splice(first_forecast, 1);
+        labels.splice(first_forecast, 1);
+    }
+
     let pointsColor = dataPoints.map(item => item.color); // Extracting results for data points
     dataPoints = dataPoints.map(item => item[2]); // Extracting results for data points
 
@@ -73,7 +82,7 @@ function createHistogram(ctx, labels, dataPoints) {
         window["histogramChart" + ctx.canvas.id].destroy();
     }
 
-    labels = labels.map(item => parseInt(item.split(':')[0])); // Extracting date-time strings for labels but remove the day since it's daily data
+    labels = labels.map(item => parseInt(item.split(':')[0]) + 1); // Extracting date-time strings for labels but remove the day since it's daily data
 
     const diff = 23 - labels[labels.length - 1];
     // For each missing, set 0
@@ -143,14 +152,24 @@ function createScatterPlot(ctx, labels, dataPoints, imageSrc) {
 
     labels = labels.map(item => parseInt(item.split(':')[0])); // Extracting date-time strings for labels but remove the day since it's daily data
 
-    dataPoints.forEach((type, idx1) => {
-        type.forEach((value, idx2) => {
+    let count = 0; let first_forecast = -1;
+    dataPoints.forEach((type, index) => {
+        type.forEach((value, idx) => {
             value.img = img.cloneNode(); // Create a new image object
             (value.img.width = 16 * value[2]/100, value.img.height = 18 * value[2]/100);
+            labels[count] = index == 0 ? labels[count] + 1 : labels[count];
+            index == 1 && idx == 0 ? first_forecast = count : null;
+            count++;
         });
     });
 
     dataPoints = dataPoints.flat();
+    // Remove the first forecast from the data points
+    if (first_forecast !== -1) {
+        dataPoints.splice(first_forecast, 1);
+        labels.splice(first_forecast, 1);
+    }
+
     let images = dataPoints.map(item => item.img); // Extracting results for data points
     dataPoints = dataPoints.map(item => item[2]); // Extracting results for data points
 

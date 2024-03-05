@@ -1,10 +1,11 @@
 import { temperatureColorChange, changeIconColor } from './changeDataColors.js';
 
 function replaceTimeDate(data) {
-    const dateTime = new Date(data);
+    const dateTime = (new Date(data)).toUTCString() ;
+    console.log(dateTime);
+    const time = dateTime.split(" ")[4].split(":").slice(0, 2).join(":"); // Gets the time in HH:MM format
 
-    const dayOfWeek = dateTime.toLocaleString('default', { weekday: 'long' }); // Gets the day of the week in written form
-    const time = dateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); // Gets the time in hh:mm format
+    const dayOfWeek = dateTime.split(",")[0];
 
     const dayElement = document.getElementById("day");
     const timeElement = document.getElementById("time");
