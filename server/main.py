@@ -51,13 +51,13 @@ def get_bad_air_quality_cities():
     result = mongo_handler.get_bad_air_quality_cities(db, date, city_name)
     return flask.jsonify(result)
 
-@app.route('/get_last_and_next_day', methods=['GET'])
-def get_last_and_next_day():
+@app.route('/get_last_recorded_and_forecasted_date', methods=['GET'])
+def get_last_recorded_and_forecasted_date():
     date = flask.request.args.get('date')
     city_name = flask.request.args.get('city_name')
     data_name = flask.request.args.get('data_name')
     document_name = flask.request.args.get('document_name')
-    result = mongo_handler.get_last_and_next_day(db, date, city_name,document_name,data_name)
+    result = mongo_handler.get_last_recorded_and_forecasted_date(db, date, city_name,document_name,data_name)
     return flask.jsonify(result)
 
 if __name__ == '__main__':

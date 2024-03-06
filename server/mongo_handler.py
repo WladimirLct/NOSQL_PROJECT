@@ -297,8 +297,8 @@ def get_daily_weather_data_pipeline(city_name, data_name, document_name, date):
     ]
 
 
-def get_last_and_next_day(db, date, city_name, document_name, data_name):    
-    # Récupérer les trois dernières températures de la collection "temperatures"
+def get_last_recorded_and_forecasted_date(db, date, city_name, document_name, data_name):    
+    # Récupérer les dernières températures recorded de la collection "temperatures"
     start_datetime, end_datetime = get_day_start_end(date)
 
     last_temps_pipeline = [
@@ -308,10 +308,9 @@ def get_last_and_next_day(db, date, city_name, document_name, data_name):
     ]
 
     last_temps_result = aggregate_data(db[document_name], last_temps_pipeline)
-    # get hour of the latest data
     last_updated = last_temps_result[len(last_temps_result)-1]['last_updated']
 
-    # # Récupérer les 6 prochaines températures de la collection "forecast_temperatures" apres l'heure de la dernière température
+    # Récupérer toutes les températures de la même journée de la collection "forecast_temperatures"
     next_temps_pipeline = [
         {"$match": {'city_id': city_name, 'time': {'$gt': last_updated, '$lte': end_datetime}}},
         {"$sort": {"time": 1}},

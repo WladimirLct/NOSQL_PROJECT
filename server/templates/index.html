@@ -359,8 +359,6 @@
             let differenceInMilliseconds = new_date - last_date;
             let differenceInHours = differenceInMilliseconds / (1000 * 60 * 60); // Convert milliseconds to hours
 
-            console.log(results)
-
             const message = `Strong temperature change detected in approximately ${parseInt(differenceInHours)} hour(s). <br>Temperature change: ${results["new_temp"]["temp_change"].toFixed(2)}°C`;
             const messageAlert = document.getElementById('messageAlert').innerHTML = message;
 

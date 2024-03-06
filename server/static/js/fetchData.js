@@ -1,6 +1,6 @@
 // Function to fetch weather data for the selected city
 async function fetchLastandNextData(cityId, dataName, documentName, date) {
-    const response = await fetch(`/get_last_and_next_day?city_name=${cityId}&data_name=${dataName}&document_name=${documentName}&date=${date}`);
+    const response = await fetch(`/get_last_recorded_and_forecasted_date?city_name=${cityId}&data_name=${dataName}&document_name=${documentName}&date=${date}`);
     const data = await response.json();
 
     const labels = data.flat().map(item => item[1].split(' ')[1]); // Extracting date-time strings for labels but remove the day since it's daily data

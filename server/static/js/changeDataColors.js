@@ -18,7 +18,6 @@ function temperatureColorChange(data) {
 export {temperatureColorChange};
 
 function getWeatherParameterColor(dataValue, dataName) {
-    // console.log(dataValue, dataName)
     const scales = {
         precip_mm: { green: [0, 1], lightGreen: [1, 5], yellow: [5, 15], orange: [15, 25], red: [25, Infinity] },
         wind_kph: { green: [0, 5], lightGreen: [5, 15], yellow: [15, 25], orange: [25, 35], red: [35, Infinity] },

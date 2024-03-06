@@ -2,7 +2,6 @@ import { temperatureColorChange, changeIconColor } from './changeDataColors.js';
 
 function replaceTimeDate(data) {
     const dateTime = (new Date(data)).toUTCString() ;
-    console.log(dateTime);
     const time = dateTime.split(" ")[4].split(":").slice(0, 2).join(":"); // Gets the time in HH:MM format
 
     const dayOfWeek = dateTime.split(",")[0];
