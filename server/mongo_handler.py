@@ -230,6 +230,8 @@ def format_latest_data(result, city_name, data_name):
 def create_weather_pattern_alerts_pipeline(city_id, amount_hours, last_temp, temp_change_threshold):
     last_time = last_temp['last_updated']
     last_temp = last_temp['temp_c']
+
+    print(last_time, last_temp, temp_change_threshold)
     return [
         {'$match': {'city_id': city_id, 'time': {'$gte': last_time}}},
         {'$limit': amount_hours},
@@ -243,15 +245,17 @@ def create_weather_pattern_alerts_pipeline(city_id, amount_hours, last_temp, tem
     ]
 
 def weather_pattern_alerts(db, city_id, n=10, temp_change_threshold=5):
-    result = None
+    result = []
 
     last_recorded_temp = db['temperatures'].find_one({'city_id': city_id}, {'_id': 0, 'temp_c': 1, 'last_updated': 1}, sort=[('last_updated', pymongo.DESCENDING)])
 
     pipeline = create_weather_pattern_alerts_pipeline(city_id, n, last_recorded_temp, temp_change_threshold)
     result = aggregate_data(db['forecast_temperatures'], pipeline)
 
-    if result:
+    if len(result) > 0:
         result = result[0]
+    else:
+        result = False
 
     return {"last_data": last_recorded_temp["last_updated"], "new_temp": result}
 

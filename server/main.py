@@ -26,7 +26,7 @@ def get_weather_data():
 @app.route('/weather_change_alert', methods=['GET'])
 def weather_change_alert():
     city_name = flask.request.args.get('city_name')
-    result = mongo_handler.weather_pattern_alerts(db, city_name, 10 ,5)
+    result = mongo_handler.weather_pattern_alerts(db, city_name, 15 ,5)
     return flask.jsonify(result)
 
 @app.route('/get_seven_day_forecast', methods=['GET'])

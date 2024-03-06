@@ -16,8 +16,8 @@ function replaceTimeDate(data) {
 
 function replaceDashBoardValues(data) {
     // Replace the values in the dashboard with the new data
-    document.getElementById("feelslike_c").textContent = data["feelslike_c"] + " °C";
     document.getElementById("temp_c").textContent = data["temp_c"];
+    document.getElementById("feelslike_c").textContent = data["feelslike_c"] + " °C";
     document.getElementById("wind_kph").textContent = data["wind_kph"] + " km/h";
     document.getElementById("humidity").textContent = data["humidity"] + " %";
     document.getElementById("pressure_mb").textContent = data["pressure_mb"] + " mb";
