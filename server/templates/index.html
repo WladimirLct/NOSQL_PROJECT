@@ -300,7 +300,6 @@
 
     // Initial update
     updateTimeList("ParisFR");
-    
     getDashBoardData("ParisFR", date);
 
     showHist("ParisFR", daily_uv)
@@ -333,23 +332,23 @@
         await updateTimeList(this.value);
         await getDashBoardData(this.value, date);
 
-        updateForcastData(this.value);
         showHist(this.value, daily_uv)
         showChart(this.value, daily_temp)
         showScatt(this.value, daily_humidity)
         displayAirQualityMessage(city, date);
         weatherChangeAlert(city);
+        updateForcastData(this.value);
     });
 
     document.getElementById('date').addEventListener('change', async function() {
         date = (new Date(this.value)).toISOString();
         getDashBoardData(city, date)
 
-        updateForcastData(city);
         showHist(city, daily_uv)
         showChart(city, daily_temp)
         showScatt(city, daily_humidity)
         displayAirQualityMessage(city, date);
+        updateForcastData(city);
     });
 
     async function weatherChangeAlert(city){
@@ -360,7 +359,7 @@
             let differenceInMilliseconds = new_date - last_date;
             let differenceInHours = differenceInMilliseconds / (1000 * 60 * 60); // Convert milliseconds to hours
 
-            const message = `Strong temperature change detected in approximately ${parseInt(differenceInHours)} hours. <br>Temperature change: ${results["new_temp"]["temp_change"].toFixed(2)}°C`;
+            const message = `Strong temperature change detected in approximately ${parseInt(differenceInHours)} hour(s). <br>Temperature change: ${results["new_temp"]["temp_change"].toFixed(2)}°C`;
             const messageAlert = document.getElementById('messageAlert').innerHTML = message;
 
             const alertComponent = document.getElementById('alert').classList.remove("hidden");
